@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Messages — SkillSwap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    /* ── MESSAGES PAGE SPECIFIC ── */
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
+
+    .nav-links {
+      list-style: none;
+    }
+
+    .btn-nav-logout {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink3);
+      border: 1px solid var(--border2);
+      border-radius: var(--r-btn);
+      padding: 6px 16px;
+      transition: all 0.2s;
+    }
+
+    .btn-nav-logout:hover {
+      color: #f87171;
+      border-color: rgba(248, 113, 113, 0.3);
+    }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+    }
+
+    .main-content {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-wrap {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 3rem;
+    }
+
+    /* Messages header */
+    .messages-header {
+      margin-bottom: 2rem;
+    }
+
+    .back-link {
+      font-size: 0.82rem;
+      color: var(--ink3);
+      transition: color 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .back-link:hover {
+      color: var(--flame-lt);
+    }
+
+    .messages-header h1 {
+      font-family: var(--font-head);
+      font-size: clamp(1.4rem, 2.5vw, 1.9rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+
+    .messages-header h1 span {
+      color: var(--flame);
+    }
+
+    /* Messages container */
+    .messages-container {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    /* Message list */
+    .messages-list {
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      min-height: 400px;
+      max-height: 520px;
+      overflow-y: auto;
+    }
+
+    .messages-list::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    .messages-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .messages-list::-webkit-scrollbar-thumb {
+      background: var(--border2);
+      border-radius: 4px;
+    }
+
+    /* Individual messages */
+    .message {
+      display: flex;
+      flex-direction: column;
+      max-width: 72%;
+      gap: 4px;
+    }
+
+    .message-received {
+      align-self: flex-start;
+    }
+
+    .message-sent {
+      align-self: flex-end;
+      align-items: flex-end;
+    }
+
+    .message-author {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--ink3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .message-text {
+      padding: 12px 16px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+      line-height: 1.55;
+      color: var(--ink);
+    }
+
+    .message-received .message-text {
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      border-top-left-radius: 4px;
+    }
+
+    .message-sent .message-text {
+      background: var(--flame);
+      color: #1a0a00;
+      border-top-right-radius: 4px;
+      box-shadow: 0 0 16px rgba(249, 115, 22, 0.25);
+    }
+
+    .message-time {
+      font-size: 0.7rem;
+      color: var(--ink4);
+    }
+
+    /* Message form */
+    .message-form {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+      padding: 1.2rem 1.5rem;
+      border-top: 1px solid var(--border);
+      background: var(--bg3);
+    }
+
+    .message-form textarea {
+      flex: 1;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border2);
+      border-radius: 12px;
+      font-size: 0.9rem;
+      font-family: var(--font-body);
+      background: var(--bg2);
+      color: var(--ink);
+      outline: none;
+      resize: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      min-height: 48px;
+      max-height: 120px;
+      line-height: 1.5;
+    }
+
+    .message-form textarea:focus {
+      border-color: var(--flame);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.12);
+    }
+
+    .message-form textarea::placeholder {
+      color: var(--ink4);
+    }
+
+    .btn-send {
+      padding: 0.75rem 1.5rem;
+      background: var(--flame);
+      color: #1a0a00;
+      font-family: var(--font-head);
+      font-size: 0.88rem;
+      font-weight: 700;
+      border: none;
+      border-radius: var(--r-btn);
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+      box-shadow: 0 0 16px rgba(249, 115, 22, 0.3);
+    }
+
+    .btn-send:hover {
+      background: var(--flame-lt);
+      box-shadow: 0 0 24px rgba(249, 115, 22, 0.45);
+    }
+
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 0.78rem;
+      color: var(--ink4);
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+    }
+
+    @media (max-width: 768px) {
+      .navbar {
+        padding: 0 1.5rem;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      .page-wrap {
+        padding: 2rem 1.5rem;
+      }
+
+      .message {
+        max-width: 90%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="../index.html" class="logo-wrap">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6"
+            stroke="#1a0a00" stroke-width="2" stroke-linecap="round" />
+          <path
+            d="M5 12c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm14 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"
+            fill="#1a0a00" />
+        </svg>
+      </div>
+      <span class="logo-name">SkillSwap</span>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="explore.html">Explore</a></li>
+      <li><a href="dashboard.html">Dashboard</a></li>
+      <li><a href="profile.html">Profile</a></li>
+      <li><a href="../index.html" class="btn-nav-logout">Logout</a></li>
+    </ul>
+    <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+  </nav>
+
+  <main class="main-content">
+    <div class="page-wrap">
+
+      <div class="messages-header">
+        <a href="dashboard.html" class="back-link">← Back to Dashboard</a>
+        <h1>Messages with <span>Elena Torres</span></h1>
+      </div>
+
+      <div class="messages-container">
+        <div class="messages-list" id="messagesList">
+
+          <div class="message message-received">
+            <span class="message-author">Elena Torres</span>
+            <p class="message-text">Hi Sarah! I'm so excited to start our skill swap. When would you be available for
+              our first Figma session?</p>
+            <span class="message-time">Jan 5, 10:30 AM</span>
+          </div>
+
+          <div class="message message-sent">
+            <span class="message-author">Sarah Johnson</span>
+            <p class="message-text">Hey Elena! I'm free this weekend — Saturday afternoon works great for me. How about
+              3 PM?</p>
+            <span class="message-time">Jan 5, 11:15 AM</span>
+          </div>
+
+          <div class="message message-received">
+            <span class="message-author">Elena Torres</span>
+            <p class="message-text">Saturday at 3 PM sounds perfect! We can do the Figma session first and then plan the
+              Spanish lesson for the following week.</p>
+            <span class="message-time">Jan 5, 11:45 AM</span>
+          </div>
+
+          <div class="message message-sent">
+            <span class="message-author">Sarah Johnson</span>
+            <p class="message-text">That sounds like a great plan! I'll send you the Figma file link before the session
+              so you can install it beforehand.</p>
+            <span class="message-time">Jan 5, 12:00 PM</span>
+          </div>
+
+          <div class="message message-received">
+            <span class="message-author">Elena Torres</span>
+            <p class="message-text">Perfect, thank you! Looking forward to it 😊</p>
+            <span class="message-time">Jan 5, 12:10 PM</span>
+          </div>
+
+          <div class="message message-sent">
+            <span class="message-author">Sarah Johnson</span>
+            <p class="message-text">Me too! See you Saturday 🙌</p>
+            <span class="message-time">Jan 5, 12:15 PM</span>
+          </div>
+
+        </div>
+
+        <form class="message-form" id="messageForm">
+          <textarea name="message_text" id="messageInput" placeholder="Type your message..." rows="2"
+            required></textarea>
+          <button type="submit" class="btn-send">Send →</button>
+        </form>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="site-footer">© 2025 SkillSwap. Exchange skills, not money.</footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    // Send message
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    const messagesList = document.getElementById('messagesList');
+
+    messageForm.addEventListener('submit', function (e) {
+      e.preventDefault();
+      const text = messageInput.value.trim();
+      if (!text) return;
+      const div = document.createElement('div');
+      div.className = 'message message-sent';
+      div.style.opacity = '0';
+      const now = new Date();
+      const time = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      div.innerHTML = `
+      <span class="message-author">Sarah Johnson</span>
+      <p class="message-text">${text}</p>
+      <span class="message-time">Just now, ${time}</span>`;
+      messagesList.appendChild(div);
+      requestAnimationFrame(() => { div.style.transition = 'opacity 0.3s'; div.style.opacity = '1'; });
+      messagesList.scrollTop = messagesList.scrollHeight;
+      messageInput.value = '';
+    });
+
+    // Scroll to bottom on load
+    messagesList.scrollTop = messagesList.scrollHeight;
+  </script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- <script src="../js/main.js"></script> -->
+</body>
+
+</html>

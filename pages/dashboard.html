@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — SkillSwap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    /* ── DASHBOARD PAGE SPECIFIC ── */
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
+
+    /* Status colors */
+    :root {
+      --c-pending: #fbbf24;
+      --c-pending-bg: rgba(251, 191, 36, 0.10);
+      --c-pending-br: rgba(251, 191, 36, 0.25);
+      --c-accept: #4ade80;
+      --c-accept-bg: rgba(74, 222, 128, 0.10);
+      --c-accept-br: rgba(74, 222, 128, 0.25);
+      --c-reject: #f87171;
+      --c-reject-bg: rgba(248, 113, 113, 0.10);
+      --c-reject-br: rgba(248, 113, 113, 0.25);
+    }
+
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-center a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink3);
+      padding: 6px 14px;
+      border-radius: var(--r-btn);
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .nav-center a:hover {
+      color: var(--flame-lt);
+      border: 1px solid var(--flame);
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.25);
+      background: transparent;
+    }
+
+    .nav-center a.active {
+      background: var(--flame);
+      color: #1a0a00;
+      font-weight: 700;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .btn-nav-logout {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink3);
+      border: 1px solid transparent;
+      border-radius: var(--r-btn);
+      padding: 6px 16px;
+      transition: all 0.2s;
+    }
+
+    .btn-nav-logout:hover {
+      color: var(--flame-lt);
+      border-color: var(--flame);
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.25);
+      background: transparent;
+    }
+
+    .nav-toggle {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 4px;
+    }
+
+    .nav-toggle span {
+      display: block;
+      width: 22px;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+    }
+
+    /* Page header */
+    .page-header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 2.2rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-header::after {
+      content: '';
+      position: absolute;
+      right: -80px;
+      top: -80px;
+      width: 300px;
+      height: 300px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .page-title {
+      font-family: var(--font-head);
+      font-size: clamp(1.6rem, 3vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 4px;
+    }
+
+    .page-title span {
+      color: var(--flame);
+    }
+
+    .page-sub {
+      font-size: 0.88rem;
+      color: var(--ink3);
+    }
+
+    .main-content {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .page-wrap {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2.5rem 3rem;
+    }
+
+    /* Alerts */
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      margin-bottom: 1.5rem;
+      display: none;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .alert-error {
+      background: rgba(248, 113, 113, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.25);
+    }
+
+    .alert-success {
+      background: rgba(74, 222, 128, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.25);
+    }
+
+    /* Tabs */
+    .tabs-bar {
+      display: flex;
+      gap: 4px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 4px;
+      margin-bottom: 2rem;
+      width: fit-content;
+    }
+
+    .tab-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-family: var(--font-head);
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--ink3);
+      padding: 8px 20px;
+      border-radius: 9px;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--ink);
+      background: var(--bg3);
+    }
+
+    .tab-btn.active {
+      background: var(--flame);
+      color: #1a0a00;
+      box-shadow: 0 0 16px rgba(249, 115, 22, 0.3);
+    }
+
+    .tab-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 1px 7px;
+      border-radius: 50px;
+      background: rgba(0, 0, 0, 0.2);
+      color: inherit;
+    }
+
+    .tab-panel {
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .section-note {
+      font-size: 0.82rem;
+      color: var(--ink3);
+      margin-bottom: 1.2rem;
+    }
+
+    /* Request cards */
+    .request-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .request-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 1.2rem;
+      transition: border-color 0.2s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .request-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+    }
+
+    .request-card.status-pending::before {
+      background: #fbbf24;
+    }
+
+    .request-card.status-accepted::before {
+      background: #4ade80;
+    }
+
+    .request-card.status-rejected::before {
+      background: #f87171;
+      opacity: 0.5;
+    }
+
+    .request-card:hover {
+      border-color: var(--border2);
+    }
+
+    .request-card.status-rejected {
+      opacity: 0.6;
+    }
+
+    .req-avatar {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 800;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+    }
+
+    .req-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .req-names {
+      font-size: 0.9rem;
+      color: var(--ink2);
+      line-height: 1.6;
+      margin-bottom: 6px;
+    }
+
+    .req-names strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    .req-names em {
+      font-style: normal;
+      color: var(--flame-lt);
+      background: var(--glow-sm);
+      border: 1px solid rgba(249, 115, 22, 0.15);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 0.82rem;
+    }
+
+    .req-message {
+      font-size: 0.82rem;
+      color: var(--ink3);
+      line-height: 1.55;
+      font-style: italic;
+      margin-top: 4px;
+      border-left: 2px solid var(--border2);
+      padding-left: 10px;
+    }
+
+    .req-date {
+      font-size: 0.72rem;
+      color: var(--ink4);
+      margin-top: 5px;
+    }
+
+    .req-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-shrink: 0;
+      flex-wrap: wrap;
+    }
+
+    /* Status badges */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 4px 12px;
+      border-radius: 50px;
+    }
+
+    .badge-pending {
+      background: rgba(251, 191, 36, 0.1);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.25);
+    }
+
+    .badge-accepted {
+      background: rgba(74, 222, 128, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.25);
+    }
+
+    .badge-rejected {
+      background: rgba(248, 113, 113, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.25);
+    }
+
+    /* Action buttons */
+    .btn-accept {
+      background: rgba(74, 222, 128, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.25);
+      border-radius: var(--r-btn);
+      padding: 7px 18px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-head);
+      white-space: nowrap;
+    }
+
+    .btn-accept:hover {
+      background: rgba(74, 222, 128, 0.2);
+    }
+
+    .btn-reject {
+      background: rgba(248, 113, 113, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.25);
+      border-radius: var(--r-btn);
+      padding: 7px 18px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-head);
+      white-space: nowrap;
+    }
+
+    .btn-reject:hover {
+      background: rgba(248, 113, 113, 0.2);
+    }
+
+    .btn-message {
+      background: var(--flame);
+      color: #1a0a00;
+      border: none;
+      border-radius: var(--r-btn);
+      padding: 8px 20px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-head);
+      box-shadow: 0 0 14px rgba(249, 115, 22, 0.25);
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-message:hover {
+      background: var(--flame-lt);
+      box-shadow: 0 0 22px rgba(249, 115, 22, 0.4);
+    }
+
+    /* Active swaps */
+    .active-swaps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .swap-tile {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .swap-tile:hover {
+      border-color: rgba(249, 115, 22, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .swap-tile-top {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .swap-tile-avatar {
+      width: 46px;
+      height: 46px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 2px solid rgba(249, 115, 22, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--flame-lt);
+      flex-shrink: 0;
+    }
+
+    .swap-tile-name {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--ink);
+    }
+
+    .swap-tile-detail {
+      font-size: 0.76rem;
+      color: var(--ink3);
+      margin-top: 2px;
+    }
+
+    .swap-tile-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .swap-status {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #4ade80;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .swap-status::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px rgba(74, 222, 128, 0.5);
+    }
+
+    /* Empty state */
+    .empty-state {
+      text-align: center;
+      padding: 3rem 2rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .empty-title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--ink2);
+      margin-bottom: 6px;
+    }
+
+    .empty-sub {
+      font-size: 0.82rem;
+      color: var(--ink3);
+    }
+
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 0.78rem;
+      color: var(--ink4);
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+    }
+
+    @media (max-width: 900px) {
+      .navbar {
+        padding: 0 1.5rem;
+      }
+
+      .nav-center {
+        display: none;
+      }
+
+      .nav-toggle {
+        display: flex;
+      }
+
+      .page-header {
+        padding: 1.8rem 1.5rem;
+      }
+
+      .page-wrap {
+        padding: 2rem 1.5rem;
+      }
+
+      .tabs-bar {
+        width: 100%;
+        overflow-x: auto;
+      }
+
+      .active-swaps-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .request-card {
+        flex-direction: column;
+      }
+
+      .req-actions {
+        width: 100%;
+      }
+    }
+
+    .fade-up {
+      opacity: 0;
+      transform: translateY(14px);
+      animation: fuAnim 0.5s ease forwards;
+    }
+
+    .fade-up:nth-child(1) {
+      animation-delay: .05s
+    }
+
+    .fade-up:nth-child(2) {
+      animation-delay: .13s
+    }
+
+    .fade-up:nth-child(3) {
+      animation-delay: .21s
+    }
+
+    @keyframes fuAnim {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="../index.html" class="logo-wrap">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6"
+            stroke="#1a0a00" stroke-width="2" stroke-linecap="round" />
+          <path
+            d="M5 12c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm14 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"
+            fill="#1a0a00" />
+        </svg>
+      </div>
+      <span class="logo-name">SkillSwap</span>
+    </a>
+    <nav class="nav-center">
+      <a href="home.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="explore.html">Explore</a>
+      <a href="dashboard.html" class="active">Dashboard</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+    <div class="nav-right">
+      <a href="profile.html" class="btn-nav-logout">Profile</a>
+      <a href="../index.html" class="btn-nav-logout">Logout</a>
+      <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+    </div>
+  </nav>
+
+  <div class="page-header">
+    <div class="page-title">My <span>Dashboard</span></div>
+    <div class="page-sub">Manage your swap requests and active exchanges</div>
+  </div>
+
+  <main class="main-content">
+    <div class="page-wrap">
+      <div class="alert alert-success" id="formSuccess"></div>
+      <div class="alert alert-error" id="formError"></div>
+      <div class="tabs-bar">
+        <button class="tab-btn active" data-tab="incoming">Incoming <span class="tab-badge"
+            id="incomingBadge">3</span></button>
+        <button class="tab-btn" data-tab="outgoing">Outgoing <span class="tab-badge"
+            id="outgoingBadge">3</span></button>
+        <button class="tab-btn" data-tab="active">Active Swaps <span class="tab-badge">2</span></button>
+      </div>
+
+      <!-- INCOMING -->
+      <div class="tab-panel active" id="tab-incoming">
+        <div class="request-list" id="incomingList"></div>
+      </div>
+
+      <!-- OUTGOING -->
+      <div class="tab-panel" id="tab-outgoing">
+        <div class="request-list" id="outgoingList"></div>
+      </div>
+
+      <!-- ACTIVE SWAPS -->
+      <div class="tab-panel" id="tab-active">
+        <p class="section-note">These swaps have been accepted — start messaging to coordinate your sessions.</p>
+        <div class="active-swaps-grid" id="activeList"></div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">© 2025 SkillSwap. Exchange skills, not money.</footer>
+
+  <script src="../js/main.js"></script>
+  <script>
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+      });
+    });
+
+    const successAlert = document.getElementById('formSuccess');
+    const errorAlert = document.getElementById('formError');
+    function showAlert(type, msg) {
+      const el = type === 'success' ? successAlert : errorAlert;
+      const other = type === 'success' ? errorAlert : successAlert;
+      el.textContent = msg; el.style.display = 'flex'; other.style.display = 'none';
+      el.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      setTimeout(() => { el.style.display = 'none'; }, 3500);
+    }
+
+    const userStr = localStorage.getItem('skillswap_user');
+    if (!userStr) window.location.href = '../login.html';
+    const currentUser = JSON.parse(userStr);
+
+    function fetchDashboard() {
+      fetch(`../api/swap_request.php?user_id=${currentUser.id}`)
+        .then(res => res.json())
+        .then(res => {
+          if (!res.success) return;
+          
+          const incomingList = document.getElementById('incomingList');
+          const outgoingList = document.getElementById('outgoingList');
+          const activeList = document.getElementById('activeList');
+          
+          incomingList.innerHTML = '';
+          outgoingList.innerHTML = '';
+          activeList.innerHTML = '';
+          
+          let inCount = 0;
+          let outCount = 0;
+          let activeCount = 0;
+
+          res.data.forEach(req => {
+            const isIncoming = req.receiver_id === currentUser.id;
+            const otherName = isIncoming ? req.sender_name : req.receiver_name;
+            const otherId = isIncoming ? req.sender_id : req.receiver_id;
+            const initials = otherName.substring(0,2).toUpperCase() || 'U';
+            
+            // Format date
+            const date = new Date(req.created_at).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+
+            let badgeHtml = '';
+            let actionHtml = '';
+            let cardClass = '';
+            let avatarColor = '';
+
+            if (req.status === 'pending') {
+              badgeHtml = `<span class="status-badge badge-pending">Pending</span>`;
+              cardClass = 'status-pending';
+              avatarColor = 'color:var(--flame-lt)';
+              if (isIncoming) {
+                actionHtml = `
+                  <button class="btn-accept" onclick="updateReq(${req.id}, 'accepted', '${otherName}')">✓ Accept</button>
+                  <button class="btn-reject" onclick="updateReq(${req.id}, 'declined', '${otherName}')">✕ Reject</button>
+                `;
+              }
+            } else if (req.status === 'accepted') {
+              badgeHtml = `<span class="status-badge badge-accepted">✓ Accepted</span>`;
+              cardClass = 'status-accepted';
+              avatarColor = 'color:#4ade80';
+              actionHtml = `<a href="messages.html?user_id=${otherId}" class="btn-message">💬 Message</a>`;
+            } else {
+              badgeHtml = `<span class="status-badge badge-rejected">✕ Rejected</span>`;
+              cardClass = 'status-rejected';
+              avatarColor = 'color:var(--ink3)';
+            }
+
+            // Create Request Card (Incoming/Outgoing)
+            const reqCard = document.createElement('div');
+            reqCard.className = `request-card ${cardClass} fade-up`;
+            reqCard.id = `req-${req.id}`;
+
+            let descText = '';
+            if (isIncoming) {
+              descText = `<strong>${otherName}</strong> wants to swap <em>${req.skill_offered}</em> for your <em>${req.skill_wanted}</em>`;
+            } else {
+              descText = `You requested <em>${req.skill_wanted}</em> from <strong>${otherName}</strong> in exchange for <em>${req.skill_offered}</em>`;
+            }
+
+            reqCard.innerHTML = `
+              <div class="req-avatar" style="${avatarColor}">${initials}</div>
+              <div class="req-body">
+                <div class="req-names">${descText}</div>
+                ${req.message ? `<div class="req-message">"${req.message}"</div>` : ''}
+                <div class="req-date">${date}</div>
+              </div>
+              <div class="req-actions">
+                ${badgeHtml}
+                ${actionHtml}
+              </div>
+            `;
+
+            if (isIncoming) {
+              incomingList.appendChild(reqCard);
+              inCount++;
+            } else {
+              outgoingList.appendChild(reqCard);
+              outCount++;
+            }
+
+            // Create Active Swap Tile if accepted
+            if (req.status === 'accepted') {
+              activeCount++;
+              const tile = document.createElement('div');
+              tile.className = 'swap-tile fade-up';
+              tile.innerHTML = `
+                <div class="swap-tile-top">
+                  <div class="swap-tile-avatar" style="${avatarColor}">${initials}</div>
+                  <div>
+                    <div class="swap-tile-name">${otherName}</div>
+                    <div class="swap-tile-detail">${req.skill_offered} ↔ ${req.skill_wanted}</div>
+                  </div>
+                </div>
+                <div class="swap-tile-footer">
+                  <div class="swap-status">Active</div>
+                  <a href="messages.html?user_id=${otherId}" class="btn-message">💬 Open Messages</a>
+                </div>
+              `;
+              activeList.appendChild(tile);
+            }
+          });
+
+          // Empty states
+          if (inCount === 0) incomingList.innerHTML = '<p class="section-note">No incoming requests yet.</p>';
+          if (outCount === 0) outgoingList.innerHTML = '<p class="section-note">No outgoing requests yet.</p>';
+          if (activeCount === 0) activeList.innerHTML = '<p class="section-note">No active swaps yet.</p>';
+
+          const badgeIn = document.getElementById('incomingBadge');
+          if(badgeIn) badgeIn.textContent = inCount;
+          const badgeOut = document.getElementById('outgoingBadge');
+          if(badgeOut) badgeOut.textContent = outCount;
+        });
+    }
+
+    fetchDashboard();
+
+    function updateReq(id, status, name) {
+      fetch('../api/swap_request.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'update_status', request_id: id, status: status })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          fetchDashboard();
+          if (status === 'accepted') showAlert('success', `✅ Swap with ${name} accepted!`);
+          else showAlert('error', `✕ Request from ${name} rejected.`);
+        } else {
+          showAlert('error', res.message || 'Failed to update status.');
+        }
+      });
+    }
+
+    // jquery added
+    $(document).ready(function () {
+
+      function showSuccess(msg) {
+        $('.alert-success').text(msg).fadeIn(400).delay(2000).fadeOut(400);
+      }
+
+      function showError(msg) {
+        $('.alert-error').text(msg).fadeIn(400).delay(2000).fadeOut(400);
+      }
+
+    });
+  </script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- <script src="../js/main.js"></script> -->
+</body>
+
+</html>

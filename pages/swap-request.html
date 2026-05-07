@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Request Swap — SkillSwap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    /* ── SWAP REQUEST PAGE SPECIFIC ── */
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem;
+      background: var(--bg);
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
+
+    .logo-link {
+      position: fixed;
+      top: 1.2rem;
+      left: 1.5rem;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .main-content {
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+      z-index: 1;
+      text-align: center;
+    }
+
+    .page-heading {
+      font-family: var(--font-head);
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .page-heading span {
+      color: var(--flame);
+    }
+
+    .swap-subtext {
+      color: var(--ink3);
+      font-size: 1rem;
+      margin-bottom: 2.5rem;
+      line-height: 1.6;
+    }
+
+    .form-container {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 24px;
+      padding: 2rem;
+      text-align: left;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink2);
+      margin-bottom: 0.5rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.8rem 1rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      border-color: var(--flame);
+      box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
+    }
+
+    .form-group select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A857A' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+    }
+
+    .btn-submit {
+      width: 100%;
+      padding: 1rem;
+      background: var(--flame);
+      color: #000;
+      border: none;
+      border-radius: 14px;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 8px 20px rgba(249, 115, 22, 0.2);
+    }
+
+    .btn-submit:hover {
+      background: var(--flame-lt);
+      transform: translateY(-2px);
+      box-shadow: 0 12px 25px rgba(249, 115, 22, 0.3);
+    }
+
+    .btn-cancel {
+      display: block;
+      margin-top: 1rem;
+      color: var(--ink3);
+      font-size: 0.9rem;
+      text-decoration: none;
+      transition: color 0.2s;
+      text-align: center;
+    }
+
+    .btn-cancel:hover {
+      color: var(--ink);
+    }
+
+    .alert {
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      font-size: 0.9rem;
+      display: none;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    .skill-preview {
+      margin-top: 0.75rem;
+      font-size: 0.85rem;
+      color: var(--ink3);
+      padding: 0.75rem;
+      background: var(--bg);
+      border-radius: 8px;
+      display: none;
+    }
+
+    .skill-preview strong {
+      color: var(--flame-lt);
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="../index.html" class="logo-link">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#1a0a00"
+          stroke-width="2" stroke-linecap="round" />
+        <path
+          d="M5 12c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm14 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"
+          fill="#1a0a00" />
+      </svg>
+    </div>
+    <span class="logo-name">SkillSwap</span>
+  </a>
+
+  <main class="main-content">
+    <h1 class="page-heading">Request <span>Swap</span></h1>
+    <p class="swap-subtext">Exchange your skills and connect with talented learners.</p>
+
+    <div class="form-container">
+      <div class="alert alert-error" id="formError"></div>
+      <div class="alert alert-success" id="formSuccess"></div>
+
+      <form id="swapForm">
+        <div class="form-group">
+          <label for="skill_wanted">Skill you want to learn</label>
+          <input type="text" id="skill_wanted" name="skill_wanted" placeholder="e.g., Python, Graphic Design..."
+            required>
+        </div>
+        <div class="form-group">
+          <label for="category">Category</label>
+
+          <select id="category" name="category" required>
+            <option value="">Select category</option>
+            <option value="Programming">Programming</option>
+            <option value="Design">Design</option>
+            <option value="Music">Music</option>
+            <option value="Marketing">Marketing</option>
+            <option value="Photography">Photography</option>
+            <option value="Business">Business</option>
+            <option value="Language">Language</option>
+            <option value="Fitness">Fitness</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="skill_offered">Skill you can offer</label>
+          <select id="skill_offered" name="skill_offered" required>
+            <option value="">Select a skill to exchange</option>
+          </select>
+          <div class="skill-preview" id="skillPreview">
+            You'll offer <strong id="skillPreviewName"></strong> in exchange for <span id="previewWanted"></span>.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="message">Message (optional)</label>
+          <textarea id="message" name="message" rows="4" maxlength="400" placeholder="Introduce yourself..."></textarea>
+        </div>
+
+        <button type="submit" class="btn-submit">Send Request →</button>
+        <a href="dashboard.html" class="btn-cancel">Cancel and go back</a>
+      </form>
+    </div>
+  </main>
+
+  <script>
+    const userStr = localStorage.getItem('skillswap_user');
+    if (!userStr) window.location.href = '../login.html';
+    const currentUser = JSON.parse(userStr);
+
+
+
+
+
+
+    const skillWantedInput = document.getElementById('skill_wanted');
+    const select = document.getElementById('skill_offered');
+    const preview = document.getElementById('skillPreview');
+    const previewName = document.getElementById('skillPreviewName');
+    const previewWanted = document.getElementById('previewWanted');
+
+
+
+    // Fetch user's skills
+    fetch(`../api/getuserskill.php?user_id=${currentUser.id}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success && data.data.length > 0) {
+          data.data.forEach(skill => {
+            const option = document.createElement('option');
+            option.value = skill.id;
+            option.textContent = `${skill.title} (${skill.skill_level})`;
+            select.appendChild(option);
+          });
+        } else {
+          select.innerHTML += '<option value="">No skills found. Please add some in your profile.</option>';
+        }
+      })
+      .catch(err => {
+        console.error('Error:', err);
+        select.innerHTML += '<option value="">Error loading skills.</option>';
+      });
+
+    select.addEventListener('change', () => {
+      if (select.value) {
+        previewName.textContent = select.options[select.selectedIndex].text;
+        previewWanted.textContent = skillWantedInput.value || 'the requested skill';
+        preview.style.display = 'block';
+      } else {
+        preview.style.display = 'none';
+      }
+    });
+
+    skillWantedInput.addEventListener('input', () => {
+      if (select.value && skillWantedInput.value) {
+        previewWanted.textContent = skillWantedInput.value;
+        preview.style.display = 'block';
+      }
+    });
+
+    const formError = document.getElementById('formError');
+    const formSuccess = document.getElementById('formSuccess');
+
+
+
+    document.getElementById('swapForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+      formError.style.display = 'none';
+      formSuccess.style.display = 'none';
+
+      // Validate required fields
+      if (!skillWantedInput.value.trim()) {
+        formError.textContent = 'Please enter a skill to learn.';
+        formError.style.display = 'block';
+        return;
+      }
+
+      if (!select.value) {
+        formError.textContent = 'Please select a skill to offer.';
+        formError.style.display = 'block';
+        return;
+      }
+      if (!document.getElementById('category').value) {
+        formError.textContent = 'Please select a category.';
+        formError.style.display = 'block';
+        return;
+      }
+
+
+      const btn = this.querySelector('.btn-submit');
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+
+      // Extract skill title and level from option text (e.g., "Python (Intermediate)" -> ["Python", "Intermediate"])
+      const fullText = select.options[select.selectedIndex].text;
+      const match = fullText.match(/^(.+?)\s*\(([^)]+)\)$/);
+      const skillTitle = match ? match[1].trim() : fullText;
+      const skillLevel = match ? match[2].trim() : '';
+
+      fetch('../api/swap_request.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sender_id: currentUser.id,
+
+          skill_offered: skillTitle,
+          skill_wanted: skillWantedInput.value.trim(),
+          skill_level: skillLevel,
+          category: document.getElementById('category').value,
+          message: document.getElementById('message').value.trim()
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            formSuccess.textContent = '🔥 Request sent successfully!';
+            formSuccess.style.display = 'block';
+            setTimeout(() => { window.location.href = 'dashboard.html'; }, 1500);
+          } else {
+            formError.textContent = res.message || 'Failed to send request.';
+            formError.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = 'Send Request →';
+          }
+        })
+        .catch(err => {
+          formError.textContent = 'Connection error. Try again.';
+          formError.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = 'Send Request →';
+        });
+    });
+  </script>
+</body>
+
+</html>

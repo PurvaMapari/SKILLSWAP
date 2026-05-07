@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — SkillSwap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
+
+    .logo-link {
+      position: fixed;
+      top: 1.2rem;
+      left: 1.5rem;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .main-content {
+      width: 100%;
+      max-width: 560px;
+      position: relative;
+      z-index: 1;
+      padding-top: 3rem;
+    }
+
+    /* ── ALERTS ── */
+    .alert {
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+      display: none;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    /* ── PROFILE CARD ── */
+    .profile-card {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 24px;
+      padding: 2.5rem 2rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .profile-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 200px;
+      height: 200px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.08) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* ── AVATAR WITH UPLOAD ── */
+    .avatar-wrap {
+      position: relative;
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 1.2rem;
+      cursor: pointer;
+    }
+
+    .avatar {
+      width: 100px;
+      height: 100px;
+      border-radius: 50%;
+      background: var(--flame);
+      color: #1a0a00;
+      font-family: var(--font-head);
+      font-size: 2.5rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 0 32px rgba(249, 115, 22, 0.3);
+      border: 3px solid rgba(249, 115, 22, 0.3);
+      overflow: hidden;
+      transition: opacity 0.2s;
+    }
+
+    .avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .avatar-overlay {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.2s;
+      font-size: 0.7rem;
+      color: #fff;
+      font-weight: 600;
+      letter-spacing: 0.03em;
+    }
+
+    .avatar-wrap:hover .avatar-overlay {
+      opacity: 1;
+    }
+
+    .avatar-wrap:hover .avatar {
+      opacity: 0.85;
+    }
+
+    .profile-name {
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      margin-bottom: 4px;
+    }
+
+    .profile-location {
+      font-size: 0.85rem;
+      color: var(--ink3);
+      margin-bottom: 1.5rem;
+    }
+
+    /* ── EDIT FORM ── */
+    .edit-section {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      padding: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .section-title {
+      font-family: var(--font-head);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--ink);
+      margin-bottom: 1.2rem;
+      text-align: center;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink2);
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.7rem 1rem;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: var(--flame);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--ink4);
+    }
+
+    .btn-save {
+      width: 100%;
+      padding: 0.85rem;
+      background: var(--flame);
+      color: #000;
+      font-family: var(--font-head);
+      font-size: 0.92rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 6px 18px rgba(249, 115, 22, 0.2);
+    }
+
+    .btn-save:hover {
+      background: var(--flame-lt);
+      transform: translateY(-1px);
+      box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3);
+    }
+
+    /* ── SKILLS SECTION ── */
+    .skills-section {
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 20px;
+      overflow: hidden;
+      margin-bottom: 2rem;
+    }
+
+    .skills-head {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 1.2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .skills-head-title {
+      font-family: var(--font-head);
+      font-size: 1.05rem;
+      font-weight: 800;
+    }
+
+    .skill-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 50px;
+      background: var(--glow-sm);
+      color: var(--flame-lt);
+      border: 1px solid rgba(249, 115, 22, 0.2);
+    }
+
+    .skill-rows {
+      padding: 0.3rem 0;
+    }
+
+    .skill-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 1.5rem;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+
+    .skill-row:last-child {
+      border-bottom: none;
+    }
+
+    .skill-row:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .skill-row-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .skill-row-info {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .skill-row-name {
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .skill-row-cat {
+      display: inline-block;
+      font-size: 0.68rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      padding: 2px 8px;
+      border-radius: 50px;
+      margin-top: 2px;
+      background: var(--bg4);
+      color: var(--ink3);
+      border: 1px solid var(--border);
+    }
+
+    .skill-row-remove {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 0.75rem;
+      color: var(--ink4);
+      padding: 5px 10px;
+      border-radius: 6px;
+      transition: all 0.2s;
+      font-family: var(--font-body);
+      font-weight: 500;
+    }
+
+    .skill-row-remove:hover {
+      color: #f87171;
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    /* Add skill */
+    .add-skill-panel {
+      border-top: 1px solid var(--border);
+      padding: 1.2rem 1.5rem;
+    }
+
+    .panel-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--ink3);
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .add-skill-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .add-skill-grid .span-2 {
+      grid-column: 1 / -1;
+    }
+
+    .add-skill-grid input,
+    .add-skill-grid textarea,
+    .add-skill-grid select {
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-family: var(--font-body);
+      background: var(--bg3);
+      color: var(--ink);
+      outline: none;
+      transition: all 0.2s;
+      padding: 9px 12px;
+      width: 100%;
+    }
+
+    .add-skill-grid textarea {
+      resize: none;
+    }
+
+    .add-skill-grid select {
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238A857A' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      padding-right: 30px;
+      cursor: pointer;
+    }
+
+    .add-skill-grid input:focus,
+    .add-skill-grid textarea:focus,
+    .add-skill-grid select:focus {
+      border-color: var(--flame);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+    }
+
+    .add-skill-grid input::placeholder,
+    .add-skill-grid textarea::placeholder {
+      color: var(--ink4);
+    }
+
+    .btn-add {
+      background: var(--bg3);
+      color: var(--flame-lt);
+      border: 1px solid rgba(249, 115, 22, 0.25);
+      border-radius: 50px;
+      padding: 9px 20px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: var(--font-head);
+    }
+
+    .btn-add:hover {
+      background: var(--glow-sm);
+      border-color: rgba(249, 115, 22, 0.4);
+    }
+
+    @media (max-width: 640px) {
+      .add-skill-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .add-skill-grid .span-2 {
+        grid-column: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <a href="../index.html" class="logo-link">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#1a0a00"
+          stroke-width="2" stroke-linecap="round" />
+        <path
+          d="M5 12c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm14 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"
+          fill="#1a0a00" />
+      </svg>
+    </div>
+    <span class="logo-name">SkillSwap</span>
+  </a>
+
+  <main class="main-content">
+    <div class="alert alert-success" id="formSuccess"></div>
+    <div class="alert alert-error" id="formError"></div>
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+      <div class="avatar-wrap" onclick="document.getElementById('photoInput').click()">
+        <div class="avatar" id="avatarInitial"></div>
+        <div class="avatar-overlay">📷 Change</div>
+        <input type="file" id="photoInput" accept="image/*" style="display:none">
+      </div>
+      <div class="profile-name" id="profileNameDisplay"></div>
+      <div class="profile-location" id="profileLocationDisplay">📍 Add location</div>
+    </div>
+
+    <!-- Edit Profile -->
+    <div class="edit-section">
+      <div class="section-title">Edit Profile</div>
+      <form id="bioForm">
+        <div class="form-group">
+          <label for="bio">Bio</label>
+          <textarea id="bio" name="bio" rows="3" placeholder="Tell others about yourself..."></textarea>
+        </div>
+        <div class="form-group">
+          <label for="location">Location</label>
+          <input type="text" id="location" name="location" placeholder="City, Country">
+        </div>
+        <button type="submit" class="btn-save" id="btnSaveProfile">Save Profile</button>
+      </form>
+    </div>
+
+    <!-- Skills I Offer -->
+    <div class="skills-section">
+      <div class="skills-head">
+        <span class="skills-head-title">🎯 Skills I Offer</span>
+        <span class="skill-badge" id="skillCount">0</span>
+      </div>
+
+      <div class="skill-rows" id="skillRows">
+        <div style="padding:1.5rem; color:var(--ink3); font-size:0.88rem; text-align:center;" id="noSkillsMsg">
+          No skills added yet. Add your first skill below!
+        </div>
+      </div>
+
+      <div class="add-skill-panel">
+        <div class="panel-label">+ Add a new skill</div>
+        <div class="add-skill-grid">
+          <input type="text" id="newSkillTitle" placeholder="Skill name (e.g. Python, Guitar...)" class="span-2">
+          <select id="newSkillCategory">
+            <option value="">Category</option>
+            <option value="Technology">Technology</option>
+            <option value="Design">Design</option>
+            <option value="Music">Music</option>
+            <option value="Language">Language</option>
+            <option value="Cooking">Cooking</option>
+            <option value="Photography">Photography</option>
+            <option value="Fitness">Fitness</option>
+            <option value="Business">Business</option>
+            <option value="Art">Art</option>
+            <option value="Other">Other</option>
+          </select>
+          <select id="newSkillLevel">
+            <option value="">Level</option>
+            <option value="Beginner">Beginner</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Advanced">Advanced</option>
+            <option value="Expert">Expert</option>
+          </select>
+          <textarea id="newSkillDesc" placeholder="Short description (optional)..." rows="2" class="span-2"></textarea>
+          <button class="btn-add span-2" id="btnAddSkill" onclick="addSkill()">Add Skill →</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    const userStr = localStorage.getItem('skillswap_user');
+    if (!userStr) window.location.href = '../login.html';
+    const currentUser = JSON.parse(userStr);
+
+    document.getElementById('profileNameDisplay').textContent = currentUser.name;
+    const avatarEl = document.getElementById('avatarInitial');
+
+    // Load saved photo or show initial
+    const savedPhoto = localStorage.getItem('skillswap_avatar_' + currentUser.id);
+    if (savedPhoto) {
+      avatarEl.innerHTML = `<img src="${savedPhoto}" alt="Profile">`;
+    } else {
+      avatarEl.textContent = currentUser.name.charAt(0).toUpperCase();
+    }
+
+    // Photo upload
+    document.getElementById('photoInput').addEventListener('change', function (e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      if (file.size > 2 * 1024 * 1024) {
+        showError('Image must be under 2MB.');
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = function (ev) {
+        const dataUrl = ev.target.result;
+        avatarEl.innerHTML = `<img src="${dataUrl}" alt="Profile">`;
+        localStorage.setItem('skillswap_avatar_' + currentUser.id, dataUrl);
+        showSuccess('📷 Profile photo updated!');
+      };
+      reader.readAsDataURL(file);
+    });
+
+    const successAlert = document.getElementById('formSuccess');
+    const errorAlert = document.getElementById('formError');
+    function showSuccess(msg) {
+      successAlert.textContent = msg;
+      successAlert.style.display = 'block';
+      setTimeout(() => { successAlert.style.display = 'none'; }, 3000);
+    }
+    function showError(msg) {
+      errorAlert.textContent = msg;
+      errorAlert.style.display = 'block';
+      setTimeout(() => { errorAlert.style.display = 'none'; }, 3000);
+    }
+
+    // Fetch profile
+    function fetchProfile() {
+      fetch(`../api/profile.php?user_id=${currentUser.id}`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.success && res.data) {
+            document.getElementById('bio').value = res.data.bio || '';
+            document.getElementById('location').value = res.data.location || '';
+            document.getElementById('profileLocationDisplay').textContent =
+              res.data.location ? `📍 ${res.data.location}` : '📍 Add location';
+          }
+        }).catch(() => { });
+    }
+    fetchProfile();
+
+    document.getElementById('bioForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSaveProfile');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      const bio = document.getElementById('bio').value;
+      const loc = document.getElementById('location').value;
+      fetch('../api/skills.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id, bio, location: loc })
+      })
+        .then(res => res.json())
+        .then(res => {
+          btn.disabled = false;
+          btn.textContent = 'Save Profile';
+          if (res.success) {
+            showSuccess('✅ Profile updated!');
+            document.getElementById('profileLocationDisplay').textContent =
+              loc ? `📍 ${loc}` : '📍 Add location';
+          } else {
+            showError(res.message || 'Failed to update profile');
+          }
+        }).catch(() => { btn.disabled = false; btn.textContent = 'Save Profile'; });
+    });
+
+    // ── SKILLS ──
+    const CATEGORY_ICONS = {
+      Technology: '💻', Design: '🎨', Music: '🎸', Language: '🗣️',
+      Cooking: '🍳', Photography: '📸', Fitness: '💪', Business: '💼',
+      Art: '🖼️', Other: '✨'
+    };
+
+    function fetchSkills() {
+      fetch(`../api/getuserskill.php?user_id=${currentUser.id}`)
+        .then(res => res.json())
+        .then(data => {
+          const rows = document.getElementById('skillRows');
+          const noMsg = document.getElementById('noSkillsMsg');
+          const countEl = document.getElementById('skillCount');
+
+          Array.from(rows.children).forEach(c => { if (c.id !== 'noSkillsMsg') c.remove(); });
+
+          if (data.success && data.data && data.data.length > 0) {
+            noMsg.style.display = 'none';
+            countEl.textContent = data.data.length;
+            data.data.forEach(skill => {
+              const icon = CATEGORY_ICONS[skill.category] || '✨';
+              const row = document.createElement('div');
+              row.className = 'skill-row';
+              row.innerHTML = `
+                <div class="skill-row-icon">${icon}</div>
+                <div class="skill-row-info">
+                  <div class="skill-row-name">${skill.title}</div>
+                  <span class="skill-row-cat">${skill.category || 'General'} • ${skill.skill_level}</span>
+                </div>
+                <button class="skill-row-remove" onclick="removeSkill(${skill.id}, this)">Remove</button>
+              `;
+              rows.appendChild(row);
+            });
+          } else {
+            noMsg.style.display = 'block';
+            countEl.textContent = '0';
+          }
+        }).catch(() => { });
+    }
+    fetchSkills();
+
+    function addSkill() {
+      const title = document.getElementById('newSkillTitle').value.trim();
+      const category = document.getElementById('newSkillCategory').value;
+      const level = document.getElementById('newSkillLevel').value;
+      const desc = document.getElementById('newSkillDesc').value.trim();
+
+      if (!title) { showError('Please enter a skill name.'); return; }
+      if (!category) { showError('Please select a category.'); return; }
+      if (!level) { showError('Please select a skill level.'); return; }
+
+      const btn = document.getElementById('btnAddSkill');
+      btn.disabled = true;
+      btn.textContent = 'Adding...';
+
+      fetch('../api/skills.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          user_id: currentUser.id, title, category,
+          skill_level: level, description: desc
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          btn.disabled = false;
+          btn.textContent = 'Add Skill →';
+          if (res.success) {
+            showSuccess('🎯 Skill added! It will appear in swap requests.');
+            document.getElementById('newSkillTitle').value = '';
+            document.getElementById('newSkillCategory').value = '';
+            document.getElementById('newSkillLevel').value = '';
+            document.getElementById('newSkillDesc').value = '';
+            fetchSkills();
+          } else { showError(res.message || 'Failed to add skill.'); }
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.textContent = 'Add Skill →';
+          showError('Connection error. Try again.');
+        });
+    }
+
+    function removeSkill(skillId, btn) {
+      if (!confirm('Remove this skill?')) return;
+      btn.textContent = '...';
+      btn.disabled = true;
+      fetch('../api/skills.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'delete',
+          skill_id: skillId,
+          user_id: currentUser.id
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) { showSuccess('Skill removed.'); fetchSkills(); }
+          else { btn.disabled = false; btn.textContent = 'Remove'; showError(res.message || 'Failed.'); }
+        })
+        .catch(() => { btn.disabled = false; btn.textContent = 'Remove'; });
+    }
+  </script>
+</body>
+
+</html>

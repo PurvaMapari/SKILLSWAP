@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkillSwap — Exchange Skills, Not Money</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@500;600&display=swap"
+        rel="stylesheet">
+
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/components.css">
+</head>
+
+<body>
+
+    <nav class="navbar">
+        <div class="logo-wrap">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6"
+                        stroke="#1a0a00" stroke-width="2" stroke-linecap="round" />
+                    <path
+                        d="M5 12c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm14 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"
+                        fill="#1a0a00" />
+                </svg>
+            </div>
+            <span class="logo-name">SkillSwap</span>
+        </div>
+
+        <div class="nav-actions">
+            <a href="login.html" class="btn btn-ghost">Log In</a>
+            <a href="signup.html" class="btn btn-ghost">Sign Up</a>
+        </div>
+
+        <button class="nav-toggle" id="navToggle">
+            <span></span><span></span><span></span>
+        </button>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-left">
+            <div class="eyebrow-pill fade-up">
+                <span class="eyebrow-dot"></span>No money. No barrier. Just skills.
+            </div>
+            <h1 class="hero-heading fade-up">
+                Exchange<br><span class="acc">Skills,</span><br>Not Money
+            </h1>
+            <p class="hero-sub fade-up">
+                Teach what you know. Learn what you love. Connect with people who have exactly what you need.
+            </p>
+            <div class="hero-btns fade-up">
+                <a href="pages/home.html" class="btn btn-flame">Swap a Skill →</a>
+                <a href="pages/explore.html" class="btn btn-flame">Browse Talents</a>
+            </div>
+            <div class="hero-stats fade-up">
+                <div>
+                    <div class="stat-val">12k+</div>
+                    <div class="stat-lbl">Swappers</div>
+                </div>
+                <div>
+                    <div class="stat-val">340+</div>
+                    <div class="stat-lbl">Categories</div>
+                </div>
+                <div>
+                    <div class="stat-val">98%</div>
+                    <div class="stat-lbl">Match rate</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hero-right">
+            <div class="bg-words">
+                <span class="bg-word">LEARN</span>
+                <span class="bg-word hi">SHARE</span>
+                <span class="bg-word">EVOLVE</span>
+            </div>
+            <div class="float-pills">
+                <div class="fpill">🎸 Guitar</div>
+                <div class="fpill">💻 Coding</div>
+                <div class="fpill">🍳 Cooking</div>
+            </div>
+            <div class="card-stack">
+                <div class="hcard">
+                    <div class="hcard-suit">♠</div>
+                    <div class="hcard-lbl">I know</div>
+                    <div class="hcard-skill">Guitar</div>
+                    <div class="hcard-want">
+                        <div class="hcard-lbl">Teach me</div>
+                        <div class="hcard-skill" style="font-size:1.2rem">Design</div>
+                    </div>
+                </div>
+                <div class="hcard">
+                    <div class="hcard-suit">♣</div>
+                    <div class="hcard-lbl">I know</div>
+                    <div class="hcard-skill">Coding</div>
+                    <div class="hcard-want">
+                        <div class="hcard-lbl">Teach me</div>
+                        <div class="hcard-skill" style="font-size:1.2rem">Cooking</div>
+                    </div>
+                </div>
+                <div class="hcard">
+                    <div class="hcard-suit">♥</div>
+                    <div class="hcard-lbl">I know</div>
+                    <div class="hcard-skill">Cooking</div>
+                    <div class="hcard-want">
+                        <div class="hcard-lbl">Teach me</div>
+                        <div class="hcard-skill" style="font-size:1.2rem">Guitar</div>
+                    </div>
+                </div>
+            </div>
+            <button class="hero-arr">↗</button>
+        </div>
+    </section>
+
+
+    <div class="tagline-bar">
+        <p>A visual story of connecting people through skills</p>
+        <hr>
+    </div>
+
+
+    <section class="thought-section">
+        <div class="thought-card reveal">
+            <div>
+                <h2 class="thought-heading">The <span>Thought</span></h2>
+                <p class="thought-body">
+                    To bridge the gap between people who have skills and those who want to learn, by creating
+                    a platform that combines transparency, accessibility, and community engagement.
+                </p>
+            </div>
+            <div class="thought-graphic">
+                <div class="tg-icon">🎯</div>
+                <div class="tg-title">Bridge the gap.<br>Build the future.</div>
+                <div class="tg-sub">Skills flow freely when<br>barriers are removed.</div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="why-section">
+        <h2 class="why-heading">Why SkillSwap?</h2>
+        <p class="why-sub">
+            "I can code. You can paint. We both want to learn."<br>
+            Let's stop scrolling and start swapping a skill.
+        </p>
+        <div class="why-cards">
+            <div class="why-card reveal">
+                <div class="why-card-num">01</div>
+                <div class="why-card-emoji">🌐</div>
+                <div class="why-card-title">No Money, No Barrier</div>
+                <p class="why-card-body">Exchange what you know for what you want to learn. Pure value, zero cost.
+                    Skills
+                    are the new currency.</p>
+                <span class="why-card-tag">Free Forever</span>
+            </div>
+            <div class="why-card reveal">
+                <div class="why-card-num">02</div>
+                <div class="why-card-emoji">🤝</div>
+                <div class="why-card-title">Smart Matching</div>
+                <p class="why-card-body">Our algorithm connects you with the perfect swap partner — someone who needs
+                    exactly what you offer.</p>
+                <span class="why-card-tag">AI Powered</span>
+            </div>
+            <div class="why-card reveal">
+                <div class="why-card-num">03</div>
+                <div class="why-card-emoji">🔁</div>
+                <div class="why-card-title">Community Loop</div>
+                <p class="why-card-body">A helps B, B helps C, C helps A. A circular ecosystem where everyone grows
+                    together.</p>
+                <span class="why-card-tag">Skill Loop</span>
+            </div>
+        </div>
+    </section>
+
+
+    <div class="iface-wrap">
+        <div class="iface-section reveal">
+            <div>
+                <h2 class="iface-heading">The Interface</h2>
+                <div class="ilines">
+                    <p class="iline">Simple Blocks.</p>
+                    <p class="iline hi">Each Skill Is A Tile.</p>
+                    <p class="iline">Each Swap Is A Story.</p>
+                </div>
+                <p class="ikeywords">"Offer." &nbsp;"Search." &nbsp;"Swap."</p>
+            </div>
+            <div class="mockup">
+                <div class="mockup-bar">
+                    <div class="mdot" style="background:#ff6058"></div>
+                    <div class="mdot" style="background:#ffbf2f"></div>
+                    <div class="mdot" style="background:#28ca41"></div>
+                </div>
+                <div class="mgrid">
+                    <div class="mtile">
+                        <div class="mtile-icon">🎨</div>
+                        <div class="mtile-name">Design</div>
+                        <div class="mtile-sub">12 offers</div>
+                    </div>
+                    <div class="mtile">
+                        <div class="mtile-icon">💻</div>
+                        <div class="mtile-name">Coding</div>
+                        <div class="mtile-sub">34 offers</div>
+                    </div>
+                    <div class="mtile">
+                        <div class="mtile-icon">🎸</div>
+                        <div class="mtile-name">Guitar</div>
+                        <div class="mtile-sub">8 offers</div>
+                    </div>
+                    <div class="mtile">
+                        <div class="mtile-icon">📸</div>
+                        <div class="mtile-name">Photography</div>
+                        <div class="mtile-sub">19 offers</div>
+                    </div>
+                    <div class="mtile">
+                        <div class="mtile-icon">🍳</div>
+                        <div class="mtile-name">Cooking</div>
+                        <div class="mtile-sub">21 offers</div>
+                    </div>
+                    <div class="mtile">
+                        <div class="mtile-icon">🗣️</div>
+                        <div class="mtile-name">Language</div>
+                        <div class="mtile-sub">16 offers</div>
+                    </div>
+                </div>
+                <div class="mockup-foot">
+                    <span class="mockup-foot-txt">340+ skills available</span>
+                    <button class="mswap-btn">Swap Now →</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <section style="background:var(--bg)">
+        <div class="match-intro reveal">
+            <h2 class="match-h">The Match Moment</h2>
+            <div class="match-badge"><span>"It's A Match!"</span></div>
+            <p class="match-sub">
+                Discover a world of opportunities with our unique skill swap platform.<br>
+                Tailor your learning journey and connect with others to exchange valuable skills.
+            </p>
+        </div>
+    </section>
+
+
+    <section class="carousel-section">
+        <div class="c-wrap">
+            <button class="c-btn" id="prevBtn">&#8592;</button>
+            <div class="c-cards" id="carouselCards">
+
+                <div class="sc-wrap side-far">
+                    <div class="sc">
+                        <div class="sc-graphic">
+                            <div class="sc-glow" style="background:radial-gradient(circle,#8b5cf6,transparent)"></div>
+                            <div class="sc-emoji">💃</div>
+                            <div class="sc-title">Dancer</div>
+                            <div class="sc-pill">Wants to learn skating</div>
+                        </div>
+                        <div class="sc-overlay">
+                            <p class="sc-otitle">Dancer</p>
+                            <span class="sc-opill">Learn skating</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sc-wrap side">
+                    <div class="sc">
+                        <div class="sc-graphic">
+                            <div class="sc-glow" style="background:radial-gradient(circle,#06b6d4,transparent)"></div>
+                            <div class="sc-emoji">⛸️</div>
+                            <div class="sc-title">Skater</div>
+                            <div class="sc-pill">Wants to learn dance</div>
+                        </div>
+                        <div class="sc-overlay">
+                            <p class="sc-otitle">Skater</p>
+                            <span class="sc-opill">Learn dance</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sc-wrap center">
+                    <div class="sc">
+                        <div class="sc-graphic">
+                            <div class="sc-glow" style="background:radial-gradient(circle,#F97316,transparent)"></div>
+                            <div class="sc-emoji">🎨</div>
+                            <div class="sc-title">UI/UX Designer</div>
+                            <div class="sc-pill">Wants to learn Guitar</div>
+                        </div>
+                        <div class="sc-overlay">
+                            <p class="sc-otitle">UIUX Designer</p>
+                            <span class="sc-opill">Learn Guitar</span>
+                        </div>
+                    </div>
+                    <div class="req-tag">
+                        <a href="pages/swap-request.html">Request Swap ✦</a>
+                    </div>
+                </div>
+
+                <div class="sc-wrap side">
+                    <div class="sc">
+                        <div class="sc-graphic">
+                            <div class="sc-glow" style="background:radial-gradient(circle,#10b981,transparent)"></div>
+                            <div class="sc-emoji">🎸</div>
+                            <div class="sc-title">Guitarist</div>
+                            <div class="sc-pill">Wants to learn language</div>
+                        </div>
+                        <div class="sc-overlay">
+                            <p class="sc-otitle">Guitarist</p>
+                            <span class="sc-opill">Learn language</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="sc-wrap side-far">
+                    <div class="sc">
+                        <div class="sc-graphic">
+                            <div class="sc-glow" style="background:radial-gradient(circle,#ef4444,transparent)"></div>
+                            <div class="sc-emoji">🎹</div>
+                            <div class="sc-title">Pianist</div>
+                            <div class="sc-pill">Wants to learn designing</div>
+                        </div>
+                        <div class="sc-overlay">
+                            <p class="sc-otitle">Pianist</p>
+                            <span class="sc-opill">Learn designing</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <button class="c-btn" id="nextBtn">&#8594;</button>
+        </div>
+    </section>
+
+    <section class="loop-section reveal">
+        <div class="loop-inner">
+            <div class="loop-badge">
+                <div class="lb-dark">Skill</div><span class="lb-txt">Loop</span>
+            </div>
+            <p class="loop-sub">A Circular Swap — Person A Helps B, B Helps C, C Helps A.</p>
+            <div class="loop-graphic">
+                <div class="loop-node">
+                    <div class="loop-av flame">👩‍💻</div>
+                    <div class="loop-name">Priya</div>
+                    <div class="loop-skill-lbl">Teaches: Coding</div>
+                </div>
+                <div class="loop-arr">
+                    <div class="arr-line"></div>
+                    <div class="arr-lbl">Teaches Guitar</div>
+                </div>
+                <div class="loop-node">
+                    <div class="loop-av dark-av">🎸</div>
+                    <div class="loop-name">Marcus</div>
+                    <div class="loop-skill-lbl">Teaches: Guitar</div>
+                </div>
+                <div class="loop-arr">
+                    <div class="arr-line"></div>
+                    <div class="arr-lbl">Teaches Cooking</div>
+                </div>
+                <div class="loop-node">
+                    <div class="loop-av">👨‍🍳</div>
+                    <div class="loop-name">Aiko</div>
+                    <div class="loop-skill-lbl">Teaches: Cooking</div>
+                </div>
+                <div class="loop-arr">
+                    <div class="arr-line"></div>
+                    <div class="arr-lbl">Teaches Coding</div>
+                </div>
+                <div class="loop-node">
+                    <div class="loop-av" style="border-color:rgba(249,115,22,0.3)">🔁</div>
+                    <div class="loop-name">Back to Priya</div>
+                    <div class="loop-skill-lbl">Loop continues</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="profiles-section reveal">
+        <div class="profiles-inner">
+            <div class="profiles-content">
+                <h2 class="profiles-title">Match Profiles</h2>
+                <p class="profiles-quote">
+                    "Get Matched With People Who Have The Skills You Need —<br>
+                    And Need The Skills You Have."
+                </p>
+                <div class="profiles-see">
+                    <a href="pages/explore.html">See All <span>→</span></a>
+                </div>
+            </div>
+            <div class="pcard-row">
+                <div class="pcard reveal">
+                    <div class="pcard-av">🎨</div>
+                    <div class="pcard-name">Sara K.</div>
+                    <div class="pcard-skill">UI/UX Designer</div>
+                    <span class="pcard-tag">Wants: Guitar</span>
+                </div>
+                <div class="pcard reveal">
+                    <div class="pcard-av">💻</div>
+                    <div class="pcard-name">Arjun M.</div>
+                    <div class="pcard-skill">Full Stack Dev</div>
+                    <span class="pcard-tag">Wants: Cooking</span>
+                </div>
+                <div class="pcard reveal">
+                    <div class="pcard-av">🎸</div>
+                    <div class="pcard-name">Leo T.</div>
+                    <div class="pcard-skill">Guitarist</div>
+                    <span class="pcard-tag">Wants: Language</span>
+                </div>
+                <div class="pcard reveal">
+                    <div class="pcard-av">🍳</div>
+                    <div class="pcard-name">Mei L.</div>
+                    <div class="pcard-skill">Chef &amp; Baker</div>
+                    <span class="pcard-tag">Wants: Design</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer-section">
+        <div class="footer-card reveal">
+            <div>
+                <div class="f-logo-row">
+                    <svg class="f-logo-icon" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6"
+                            stroke="#F97316" stroke-width="2.5" stroke-linecap="round" />
+                    </svg>
+                    <span class="f-logo-name">skilldex</span>
+                </div>
+                <p class="f-sub">Subscribe to our newsletter for the latest updates on features and new releases.</p>
+                <div class="f-email-row">
+                    <input type="email" class="f-email" placeholder="Your email here">
+                    <button class="f-join">Join</button>
+                </div>
+                <p class="f-privacy">By subscribing, you consent to our Privacy Policy and agree to receive updates.</p>
+            </div>
+
+            <div>
+                <p class="f-col-title">Quick Links</p>
+                <div class="f-links">
+                    <a href="#">About Us</a>
+                    <a href="#">Contact Us</a>
+                    <a href="#">Blog Posts</a>
+                    <a href="#">Help Center</a>
+                    <a href="#">Community Forum</a>
+                </div>
+            </div>
+
+            <div>
+                <p class="f-col-title">Resources</p>
+                <div class="f-links">
+                    <a href="#">Webinars</a>
+                    <a href="#">Case Studies</a>
+                    <a href="#">E-books</a>
+                    <a href="#">FAQs</a>
+                    <a href="#">Feedback</a>
+                </div>
+            </div>
+
+            <div>
+                <p class="f-col-title">Connect With Us</p>
+                <div class="f-links">
+                    <a href="#" class="soc-link">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z" />
+                        </svg>
+                        Facebook
+                    </a>
+                    <a href="#" class="soc-link">
+                        <svg viewBox="0 0 24 24">
+                            <rect x="2" y="2" width="20" height="20" rx="5" />
+                            <circle cx="12" cy="12" r="4" fill="#0E0E0E" />
+                            <circle cx="17.5" cy="6.5" r="1.2" fill="#0E0E0E" />
+                        </svg>
+                        Instagram
+                    </a>
+                    <a href="#" class="soc-link">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                        </svg>
+                        X
+                    </a>
+                    <a href="#" class="soc-link">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z" />
+                            <circle cx="4" cy="4" r="2" />
+                        </svg>
+                        LinkedIn
+                    </a>
+                    <a href="#" class="soc-link">
+                        <svg viewBox="0 0 24 24">
+                            <path
+                                d="M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58A2.78 2.78 0 003.41 19.6C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z" />
+                            <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="#0E0E0E" />
+                        </svg>
+                        YouTube
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bot">
+            <p class="footer-copy">© 2025 SkillSwap. All rights reserved.</p>
+            <div class="footer-bot-links">
+                <a href="#">Privacy Policy</a>
+                <a href="#">Terms of Service</a>
+                <a href="#">Cookies Settings</a>
+            </div>
+        </div>
+    </footer>
+
+    <style>
+        .nav-actions .btn-ghost:hover {
+            background: transparent;
+            border-color: var(--flame);
+            color: var(--flame-lt);
+            box-shadow: 0 0 16px rgba(249, 115, 22, 0.35);
+        }
+
+        .hero-btns a {
+            background: transparent !important;
+            color: var(--ink) !important;
+            border: 1px solid var(--border2) !important;
+            box-shadow: none !important;
+        }
+
+        .hero-btns a:hover {
+            background: transparent !important;
+            color: var(--flame-lt) !important;
+            border-color: var(--flame) !important;
+            box-shadow: 0 0 16px rgba(249, 115, 22, 0.3) !important;
+            transform: translateY(-2px);
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+
+</html>

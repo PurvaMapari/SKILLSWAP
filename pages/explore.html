@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Explore Skills — SkillSwap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    /* ── EXPLORE PAGE SPECIFIC ── */
+    body {
+      display: flx;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
+
+    /* Navbar extras */
+    .nav-center {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-center a {
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--ink3);
+      padding: 6px 14px;
+      border-radius: var(--r-btn);
+      transition: all 0.2s;
+      border: 1px solid transparent;
+    }
+
+    .nav-center a:hover {
+      color: var(--flame-lt);
+      border: 1px solid var(--flame);
+      box-shadow: 0 0 10px rgba(249, 115, 22, 0.25);
+      background: transparent;
+    }
+
+    .nav-center a.active {
+      background: var(--flame);
+      color: #1a0a00;
+      font-weight: 700;
+    }
+
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .nav-search-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--ink3);
+      display: flex;
+      align-items: center;
+      padding: 6px;
+      transition: color 0.2s;
+    }
+
+    .nav-search-btn:hover {
+      color: var(--ink);
+    }
+
+    .nav-search-btn svg {
+      width: 18px;
+      height: 18px;
+    }
+
+    .nav-dropdown {
+      position: relative;
+    }
+
+    .nav-menu-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ink2);
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+
+    .nav-menu-btn:hover {
+      background: var(--bg4);
+    }
+
+    .dropdown-menu {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 14px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      min-width: 180px;
+      overflow: hidden;
+      z-index: 200;
+    }
+
+    .dropdown-menu.open {
+      display: block;
+      animation: ddIn 0.18s ease;
+    }
+
+    @keyframes ddIn {
+      from {
+        opacity: 0;
+        transform: translateY(-6px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .dropdown-menu a {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 11px 16px;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--ink2);
+      transition: background 0.15s;
+    }
+
+    .dropdown-menu a:hover {
+      background: var(--bg3);
+      color: var(--ink);
+    }
+
+    .dropdown-menu .logout {
+      color: #f87171;
+      border-top: 1px solid var(--border);
+    }
+
+    .dropdown-menu .logout:hover {
+      background: rgba(248, 113, 113, 0.08);
+    }
+
+    /* Hero bar */
+    .hero-bar {
+      background: var(--flame);
+      padding: 3rem 3rem 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bar::before {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      left: -80px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.06);
+      pointer-events: none;
+    }
+
+    .hero-bar::after {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      pointer-events: none;
+    }
+
+    .hero-bar-inner {
+      max-width: 580px;
+      width: 100%;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero-title {
+      font-family: var(--font-head);
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+      font-weight: 800;
+      color: #1a0a00;
+      letter-spacing: -0.04em;
+      margin-bottom: 6px;
+      line-height: 1;
+    }
+
+    .hero-subtitle {
+      font-size: 0.95rem;
+      color: rgba(26, 10, 0, 0.65);
+      margin-bottom: 1.8rem;
+    }
+
+    .hero-search {
+      display: flex;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero-search-input {
+      flex: 1;
+      padding: 0.9rem 1.3rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      border: none;
+      outline: none;
+      background: var(--bg2);
+      color: var(--ink);
+    }
+
+    .hero-search-input::placeholder {
+      color: var(--ink3);
+    }
+
+    .hero-search-btn {
+      background: var(--bg);
+      border: none;
+      padding: 0 1.3rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.2s;
+    }
+
+    .hero-search-btn:hover {
+      background: var(--bg3);
+    }
+
+    .hero-search-btn svg {
+      width: 20px;
+      height: 20px;
+      stroke: var(--flame-lt);
+      fill: none;
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+
+    /* Category pills */
+    .categories-bar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 3rem;
+      position: sticky;
+      top: 66px;
+      z-index: 90;
+    }
+
+    .categories-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .cat-pill {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 7px 18px;
+      border-radius: var(--r-btn);
+      border: 1px solid var(--border2);
+      background: var(--bg3);
+      color: var(--ink3);
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .cat-pill:hover {
+      border-color: rgba(249, 115, 22, 0.4);
+      color: var(--ink);
+      background: var(--bg4);
+    }
+
+    .cat-pill.active {
+      background: var(--flame);
+      border-color: var(--flame);
+      color: #1a0a00;
+      font-weight: 700;
+      box-shadow: 0 0 14px rgba(249, 115, 22, 0.3);
+    }
+
+    /* Main */
+    .main-content {
+      flex: 1;
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 2.5rem 3rem;
+    }
+
+    .results-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .results-info {
+      font-size: 0.85rem;
+      color: var(--ink3);
+    }
+
+    .results-info span {
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .sort-select {
+      font-family: var(--font-body);
+      font-size: 0.82rem;
+      color: var(--ink2);
+      background: var(--bg2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      padding: 6px 12px;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.2s;
+    }
+
+    .sort-select:focus {
+      border-color: var(--flame);
+    }
+
+    .sort-select option {
+      background: var(--bg2);
+    }
+
+    /* Skill cards */
+    .skills-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .skill-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.4rem;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .skill-card::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 3px;
+      border-radius: 3px 0 0 3px;
+      background: var(--flame);
+      transform: scaleY(0);
+      transform-origin: bottom;
+      transition: transform 0.25s ease;
+    }
+
+    .skill-card:hover {
+      border-color: rgba(249, 115, 22, 0.3);
+      box-shadow: 0 8px 32px rgba(249, 115, 22, 0.08);
+      transform: translateY(-3px);
+    }
+
+    .skill-card:hover::before {
+      transform: scaleY(1);
+    }
+
+    .skill-card-category {
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--flame-lt);
+    }
+
+    .skill-card-title {
+      font-family: var(--font-head);
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.25;
+      letter-spacing: -0.02em;
+    }
+
+    .skill-card-desc {
+      font-size: 0.82rem;
+      color: var(--ink3);
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .skill-card-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 8px;
+      padding-top: 10px;
+      border-top: 1px solid var(--border);
+    }
+
+    .skill-card-teacher {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .teacher-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg3);
+      border: 1px solid var(--border2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-head);
+      font-size: 0.68rem;
+      font-weight: 800;
+      color: var(--ink2);
+      flex-shrink: 0;
+    }
+
+    .teacher-name {
+      font-size: 0.78rem;
+      color: var(--ink3);
+    }
+
+    .skill-card-arrow {
+      color: var(--flame);
+      font-size: 1rem;
+      transition: transform 0.2s;
+      opacity: 0;
+    }
+
+    .skill-card:hover .skill-card-arrow {
+      transform: translateX(4px);
+      opacity: 1;
+    }
+
+    .empty-state {
+      grid-column: 1 / -1;
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    .empty-title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--ink2);
+      margin-bottom: 6px;
+    }
+
+    .empty-sub {
+      font-size: 0.82rem;
+      color: var(--ink3);
+    }
+
+    /* Pagination */
+    .pagination {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding-bottom: 1rem;
+    }
+
+    .page-btn {
+      font-family: var(--font-head);
+      font-size: 0.82rem;
+      font-weight: 700;
+      padding: 8px 22px;
+      border-radius: var(--r-btn);
+      border: 1px solid var(--border2);
+      background: var(--bg2);
+      color: var(--ink2);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .page-btn:hover:not(:disabled) {
+      background: var(--flame);
+      color: #1a0a00;
+      border-color: var(--flame);
+      box-shadow: 0 0 16px rgba(249, 115, 22, 0.3);
+    }
+
+    .page-btn:disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+    }
+
+    .page-info {
+      font-size: 0.82rem;
+      color: var(--ink3);
+      padding: 0 6px;
+    }
+
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      text-align: center;
+      padding: 1.2rem;
+      font-size: 0.78rem;
+      color: var(--ink4);
+      border-top: 1px solid var(--border);
+      background: var(--bg2);
+    }
+
+    @media (max-width: 900px) {
+      .navbar {
+        padding: 0 1.5rem;
+      }
+
+      .nav-center {
+        display: none;
+      }
+
+      .hero-bar {
+        padding: 2rem 1.5rem;
+      }
+
+      .categories-bar {
+        padding: 0.8rem 1.5rem;
+      }
+
+      .main-content {
+        padding: 1.8rem 1.5rem;
+      }
+
+      .skills-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 540px) {
+      .skills-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-title {
+        font-size: 2.4rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar">
+    <a href="../index.html" class="logo-wrap">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6"
+            stroke="#1a0a00" stroke-width="2" stroke-linecap="round" />
+          <path
+            d="M5 12c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm14 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"
+            fill="#1a0a00" />
+        </svg>
+      </div>
+      <span class="logo-name">SkillSwap</span>
+    </a>
+    <nav class="nav-center">
+      <a href="home.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="explore.html" class="active">Explore</a>
+      <a href="dashboard.html">Dashboard</a>
+      <a href="contact.html">Contact Us</a>
+    </nav>
+    <div class="nav-right">
+      <button class="nav-search-btn" aria-label="Search" id="navSearchBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <circle cx="11" cy="11" r="8" />
+          <path d="m21 21-4.35-4.35" />
+        </svg>
+      </button>
+      <div class="nav-dropdown">
+        <button class="nav-menu-btn" id="menuBtn">☰</button>
+        <div class="dropdown-menu" id="dropdownMenu">
+          <a href="home.html">🏠 Home</a>
+          <a href="explore.html">🔍 Explore</a>
+          <a href="dashboard.html">📋 Dashboard</a>
+          <a href="profile.html">👤 Profile</a>
+          <a href="messages.html">💬 Messages</a>
+          <a href="../login.html" class="logout">← Logout</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="hero-bar">
+    <div class="hero-bar-inner">
+      <h1 class="hero-title">Explore Skills</h1>
+      <p class="hero-subtitle">Find skills to learn and connect with teachers</p>
+      <div class="hero-search">
+        <input type="text" class="hero-search-input" id="searchInput"
+          placeholder="Search skills, categories, teachers...">
+        <button class="hero-search-btn" id="searchBtn">
+          <svg viewBox="0 0 24 24">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="categories-bar">
+    <div class="categories-inner" id="categoryPills">
+      <button class="cat-pill active" data-cat="all">All</button>
+      <button class="cat-pill" data-cat="design">🎨 Design</button>
+      <button class="cat-pill" data-cat="music">🎵 Music</button>
+      <button class="cat-pill" data-cat="coding">💻 Coding</button>
+      <button class="cat-pill" data-cat="languages">🗣️ Languages</button>
+      <button class="cat-pill" data-cat="photography">📸 Photography</button>
+      <button class="cat-pill" data-cat="writing">✏️ Writing</button>
+      <button class="cat-pill" data-cat="marketing">📣 Marketing</button>
+    </div>
+  </div>
+
+  <main class="main-content">
+    <div class="results-bar">
+      <div class="skills-grid" id="skillsGrid"></div>
+      <p class="results-info">Showing <span id="resultCount"></span> skills</p>
+      <select class="sort-select" id="sortSelect">
+        <option value="default">Sort: Default</option>
+        <option value="az">A → Z</option>
+        <option value="za">Z → A</option>
+      </select>
+    </div>
+    <!-- 
+    <div class="pagination">
+      <button class="page-btn" id="prevBtn" disabled>← Previous</button>
+      <span class="page-info" id="pageInfo">Page 1 of 3</span>
+      <button class="page-btn" id="nextBtn">Next →</button>
+    </div> -->
+  </main>
+
+  <footer class="site-footer">© 2025 SkillSwap. Exchange skills, not money.</footer>
+
+
+  <script>
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    menuBtn.addEventListener('click', e => { e.stopPropagation(); dropdownMenu.classList.toggle('open'); });
+    document.addEventListener('click', () => dropdownMenu.classList.remove('open'));
+
+    document.getElementById('navSearchBtn').addEventListener('click', () => {
+      document.getElementById('searchInput').focus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // Skill card filtering and sorting
+    const allCards = Array.from(document.querySelectorAll('.skill-card'));
+    const resultCount = document.getElementById('resultCount');
+    const grid = document.getElementById('skillsGrid');
+    let activeCat = 'all', searchTerm = '';
+
+    document.querySelectorAll('.cat-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        activeCat = pill.dataset.cat;
+        applyFilters();
+      });
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    function doSearch() {
+      searchTerm = searchInput.value.toLowerCase().trim();
+      if (searchTerm) {
+        document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
+        document.querySelector('[data-cat="all"]').classList.add('active');
+        activeCat = 'all';
+      }
+      applyFilters();
+    }
+    document.getElementById('searchBtn').addEventListener('click', doSearch);
+    searchInput.addEventListener('input', doSearch);
+    searchInput.addEventListener('keydown', e => { if (e.key === 'Enter') doSearch(); });
+
+    document.getElementById('sortSelect').addEventListener('change', function () {
+      const cards = Array.from(grid.querySelectorAll('.skill-card'));
+      if (this.value === 'az') cards.sort((a, b) => a.querySelector('.skill-card-title').textContent.localeCompare(b.querySelector('.skill-card-title').textContent));
+      else if (this.value === 'za') cards.sort((a, b) => b.querySelector('.skill-card-title').textContent.localeCompare(a.querySelector('.skill-card-title').textContent));
+      else cards.sort((a, b) => allCards.indexOf(a) - allCards.indexOf(b));
+      cards.forEach(c => grid.appendChild(c));
+    });
+
+    function applyFilters() {
+      let visible = 0;
+      const existing = grid.querySelector('.empty-state');
+      if (existing) existing.remove();
+      allCards.forEach(card => {
+        const matchCat = activeCat === 'all' || card.dataset.cat === activeCat;
+        const title = card.querySelector('.skill-card-title').textContent.toLowerCase();
+        const desc = card.querySelector('.skill-card-desc').textContent.toLowerCase();
+        const cat = card.querySelector('.skill-card-category').textContent.toLowerCase();
+        const teacher = card.querySelector('.teacher-name').textContent.toLowerCase();
+        const matchSearch = !searchTerm || title.includes(searchTerm) || desc.includes(searchTerm) || cat.includes(searchTerm) || teacher.includes(searchTerm);
+        if (matchCat && matchSearch) { card.style.display = 'flex'; visible++; }
+        else card.style.display = 'none';
+      });
+      resultCount.textContent = visible;
+      if (visible === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-state';
+        empty.innerHTML = `<div class="empty-icon">🔍</div><div class="empty-title">No skills found</div><div class="empty-sub">Try a different search or category</div>`;
+        grid.appendChild(empty);
+      }
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const qParam = params.get('q');
+    if (qParam) { searchInput.value = qParam; doSearch(); }
+
+    let currentPage = 1;
+    const totalPages = 3;
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const pageInfo = document.getElementById('pageInfo');
+    function updatePagination() {
+      pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
+      prevBtn.disabled = currentPage === 1;
+      nextBtn.disabled = currentPage === totalPages;
+    }
+    if (prevBtn) {
+      prevBtn.addEventListener('click', () => {
+        if (currentPage > 1) {
+          currentPage--;
+          updatePagination();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
+    if (nextBtn) {
+      nextBtn.addEventListener('click', () => {
+        if (currentPage < totalPages) {
+          currentPage++;
+          updatePagination();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+      });
+    }
+  </script>
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <script src="../js/main.js"></script>
+  <!-- applyFilters(); -->
+  <script>
+
+    const skillsGrid =
+      document.getElementById('skillsGrid');
+
+    fetch('../api/skills.php')
+
+      .then(res => res.json())
+
+      .then(data => {
+
+        if (!data.success) return;
+
+        skillsGrid.innerHTML = '';
+
+        data.data.forEach(skill => {
+
+          const card =
+            document.createElement('div');
+
+          card.className = 'skill-card';
+
+          card.dataset.cat =
+            (skill.category || 'general')
+              .toLowerCase();
+
+          card.innerHTML = `
+
+      <div class="skill-card-category">
+        ${skill.category || 'General'}
+      </div>
+
+      <div class="skill-card-title">
+        ${skill.title}
+      </div>
+
+      <div class="skill-card-desc">
+        ${skill.description || 'No description added.'}
+      </div>
+
+      <div class="skill-card-footer">
+
+  <div class="skill-card-teacher">
+
+    <div class="teacher-avatar">
+      ${skill.owner_name?.charAt(0) || 'U'}
+    </div>
+
+    <div class="teacher-name">
+      ${skill.owner_name || 'Unknown'}
+    </div>
+
+  </div>
+
+  <a
+    href="swap-request.html?teacher_id=${skill.user.id}&skill=${encodeURIComponent(skill.title)}"
+    class="skill-card-arrow"
+  >
+    →
+  </a>
+
+</div>
+</a>
+
+        <div class="skill-card-teacher">
+
+          <div class="teacher-avatar">
+            ${skill.owner_name?.charAt(0) || 'U'}
+          </div>
+
+          <div class="teacher-name">
+            ${skill.owner_name || 'Unknown'}
+          </div>
+
+        </div>
+
+        <a
+          href="swap-request.html?teacher_id=${skill.user.id}&skill=${encodeURIComponent(skill.title)}"
+          class="skill-card-arrow"
+        >
+          →
+        </a>
+
+      </div>
+    `;
+
+          skillsGrid.appendChild(card);
+
+        });
+
+        applyFilters();
+
+      })
+
+      .catch(err => {
+        console.error(err);
+      });
+
+  </script>
+</body>
+
+</html>
