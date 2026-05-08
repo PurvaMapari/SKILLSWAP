@@ -300,14 +300,18 @@
             </div>
             <span class="logo-name">SkillSwap</span>
         </a>
-        <ul class="nav-links" id="navLinks">
-            <li><a href="explore.html">Explore</a></li>
-            <li><a href="dashboard.html">Dashboard</a></li>
-            <li><a href="profile.html">Profile</a></li>
-            <li><a href="../index.html" class="btn-nav-logout">Logout</a></li>
-        </ul>
-        <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+    <nav class="nav-center">
+      <a href="home.html">Home</a>
+      <a href="about.html">About</a>
+      <a href="explore.html">Explore</a>
+      <a href="dashboard.html">Dashboard</a>
     </nav>
+    <div class="nav-right">
+      <a href="profile.html" class="nav-avatar" id="navAvatar" title="Profile"></a>
+      <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
+    </div>
+    </nav>
+    <script>(function(){var u=JSON.parse(localStorage.getItem('skillswap_user')||'{}');var el=document.getElementById('navAvatar');if(!el)return;var p=localStorage.getItem('skillswap_avatar_'+(u.id||''));if(p){el.innerHTML='<img src="'+p+'" alt="P">';}else{el.textContent=(u.name||'U').charAt(0).toUpperCase();}})();</script>
 
     <main class="main-content">
         <div class="page-wrap">

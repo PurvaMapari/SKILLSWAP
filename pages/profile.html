@@ -165,7 +165,30 @@
     .profile-location {
       font-size: 0.85rem;
       color: var(--ink3);
-      margin-bottom: 1.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .btn-logout {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 9px 28px;
+      background: rgba(248, 113, 113, 0.08);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.2);
+      border-radius: 50px;
+      font-family: var(--font-head);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+    }
+
+    .btn-logout:hover {
+      background: rgba(248, 113, 113, 0.15);
+      border-color: rgba(248, 113, 113, 0.35);
+      transform: translateY(-1px);
     }
 
     /* ── EDIT FORM ── */
@@ -485,6 +508,7 @@
       </div>
       <div class="profile-name" id="profileNameDisplay"></div>
       <div class="profile-location" id="profileLocationDisplay">📍 Add location</div>
+      <a href="#" class="btn-logout" onclick="localStorage.removeItem('skillswap_user');window.location.href='../index.html';return false;">← Logout</a>
     </div>
 
     <!-- Edit Profile -->
@@ -498,6 +522,10 @@
         <div class="form-group">
           <label for="location">Location</label>
           <input type="text" id="location" name="location" placeholder="City, Country">
+        </div>
+        <div class="form-group">
+          <label for="phone">WhatsApp Number</label>
+          <input type="tel" id="phone" name="phone" placeholder="+91 9876543210">
         </div>
         <button type="submit" class="btn-save" id="btnSaveProfile">Save Profile</button>
       </form>
@@ -603,6 +631,7 @@
           if (res.success && res.data) {
             document.getElementById('bio').value = res.data.bio || '';
             document.getElementById('location').value = res.data.location || '';
+            document.getElementById('phone').value = res.data.phone || '';
             document.getElementById('profileLocationDisplay').textContent =
               res.data.location ? `📍 ${res.data.location}` : '📍 Add location';
           }
@@ -617,10 +646,11 @@
       btn.textContent = 'Saving...';
       const bio = document.getElementById('bio').value;
       const loc = document.getElementById('location').value;
-      fetch('../api/skills.php', {
+      const phone = document.getElementById('phone').value;
+      fetch('../api/profile.php', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_id: currentUser.id, bio, location: loc })
+        body: JSON.stringify({ user_id: currentUser.id, bio, location: loc, phone })
       })
         .then(res => res.json())
         .then(res => {

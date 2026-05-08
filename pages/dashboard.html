@@ -679,14 +679,13 @@
       <a href="about.html">About</a>
       <a href="explore.html">Explore</a>
       <a href="dashboard.html" class="active">Dashboard</a>
-      <a href="contact.html">Contact Us</a>
     </nav>
     <div class="nav-right">
-      <a href="profile.html" class="btn-nav-logout">Profile</a>
-      <a href="../index.html" class="btn-nav-logout">Logout</a>
+      <a href="profile.html" class="nav-avatar" id="navAvatar" title="Profile"></a>
       <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
     </div>
   </nav>
+  <script>(function(){var u=JSON.parse(localStorage.getItem('skillswap_user')||'{}');var el=document.getElementById('navAvatar');if(!el)return;var p=localStorage.getItem('skillswap_avatar_'+(u.id||''));if(p){el.innerHTML='<img src="'+p+'" alt="P">';}else{el.textContent=(u.name||'U').charAt(0).toUpperCase();}})();</script>
 
   <div class="page-header">
     <div class="page-title">My <span>Dashboard</span></div>
@@ -769,10 +768,17 @@
           let activeCount = 0;
 
           res.data.forEach(req => {
-            const isIncoming = req.receiver_id === currentUser.id;
-            const otherName = isIncoming ? req.sender_name : req.receiver_name;
-            const otherId = isIncoming ? req.sender_id : req.receiver_id;
-            const initials = otherName.substring(0,2).toUpperCase() || 'U';
+            const senderId = parseInt(req.sender_id);
+            const receiverId = req.receiver_id ? parseInt(req.receiver_id) : null;
+            const userId = parseInt(currentUser.id);
+
+            // Skip requests not involving this user
+            if (senderId !== userId && receiverId !== userId) return;
+
+            const isIncoming = receiverId === userId;
+            const otherName = isIncoming ? (req.sender_name || 'Unknown') : (req.receiver_name || 'Unknown');
+            const otherId = isIncoming ? senderId : receiverId;
+            const initials = (otherName || 'U').substring(0,2).toUpperCase();
             
             // Format date
             const date = new Date(req.created_at).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});

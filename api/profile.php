@@ -15,7 +15,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $userId = intval($_GET['user_id']);
     $conn = getConnection();
     
-    $stmt = $conn->prepare("SELECT bio, location FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT bio, location, phone FROM users WHERE id = ?");
     $stmt->bind_param('i', $userId);
     $stmt->execute();
     $result = $stmt->get_result();
@@ -23,7 +23,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if ($row = $result->fetch_assoc()) {
         echo json_encode(['success' => true, 'data' => [
             'bio' => $row['bio'] ? $row['bio'] : '',
-            'location' => $row['location'] ? $row['location'] : ''
+            'location' => $row['location'] ? $row['location'] : '',
+            'phone' => $row['phone'] ? $row['phone'] : ''
         ]]);
     } else {
         echo json_encode(['success' => false, 'message' => 'User not found.']);
@@ -40,6 +41,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $userId = intval($data['user_id'] ?? 0);
     $bio = trim($data['bio'] ?? '');
     $location = trim($data['location'] ?? '');
+    $phone = trim($data['phone'] ?? '');
     
     if (!$userId) {
         echo json_encode(['success' => false, 'message' => 'user_id is required.']);
@@ -47,8 +49,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     
     $conn = getConnection();
-    $stmt = $conn->prepare("UPDATE users SET bio = ?, location = ? WHERE id = ?");
-    $stmt->bind_param('ssi', $bio, $location, $userId);
+    $stmt = $conn->prepare("UPDATE users SET bio = ?, location = ?, phone = ? WHERE id = ?");
+    $stmt->bind_param('sssi', $bio, $location, $phone, $userId);
     
     if ($stmt->execute()) {
         echo json_encode(['success' => true, 'message' => 'Profile updated successfully.']);

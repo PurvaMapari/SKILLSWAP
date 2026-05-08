@@ -105,40 +105,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         while ($row = $result->fetch_assoc()) $skills[] = $row;
         $stmt->close();
     } else {
-        // Explore page: combine skills + public offers
+        // Explore page: show public swap requests
         $skills = [];
         
-        // Get regular skills
-        $stmt = $conn->prepare(
-            "SELECT s.*, u.name AS owner_name, u.email AS owner_email, 'skill' AS type_source
-             FROM skills s
-             JOIN users u ON s.user_id = u.id
-             WHERE s.type = 'offer'
-             ORDER BY s.created_at DESC
-             LIMIT 50"
-        );
-        $stmt->execute();
-        $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) $skills[] = $row;
-        $stmt->close();
-        
-        // Get public offers (receiver_id IS NULL)
         $stmt = $conn->prepare(
             "SELECT 
                 sr.id,
                 sr.sender_id AS user_id,
-                sr.skill_offered AS title,
+                sr.skill_offered,
+                sr.skill_wanted,
+                sr.category,
+                sr.skill_level,
                 sr.message AS description,
-                'offer' AS type,
-                'General' AS category,
-                'beginner' AS level,
+                sr.status,
                 sr.created_at,
                 u.name AS owner_name,
-                u.email AS owner_email,
-                'offer' AS type_source
+                u.email AS owner_email
              FROM swap_requests sr
              JOIN users u ON sr.sender_id = u.id
-             WHERE sr.receiver_id IS NULL AND sr.skill_wanted = ''
+             WHERE sr.receiver_id IS NULL AND sr.status = 'pending'
              ORDER BY sr.created_at DESC
              LIMIT 50"
         );

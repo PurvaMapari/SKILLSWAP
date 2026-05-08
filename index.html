@@ -53,8 +53,8 @@
                 Teach what you know. Learn what you love. Connect with people who have exactly what you need.
             </p>
             <div class="hero-btns fade-up">
-                <a href="pages/home.html" class="btn btn-flame">Swap a Skill →</a>
-                <a href="pages/explore.html" class="btn btn-flame">Browse Talents</a>
+                <a href="signup.html" onclick="return authGuard(event,'pages/home.html')" class="btn btn-flame">Swap a Skill →</a>
+                <a href="signup.html" onclick="return authGuard(event,'pages/explore.html')" class="btn btn-flame">Browse Talents</a>
             </div>
             <div class="hero-stats fade-up">
                 <div>
@@ -296,7 +296,7 @@
                         </div>
                     </div>
                     <div class="req-tag">
-                        <a href="pages/swap-request.html">Request Swap ✦</a>
+                        <a href="signup.html" onclick="return authGuard(event,'pages/swap-request.html')">Request Swap ✦</a>
                     </div>
                 </div>
 
@@ -387,7 +387,7 @@
                     And Need The Skills You Have."
                 </p>
                 <div class="profiles-see">
-                    <a href="pages/explore.html">See All <span>→</span></a>
+                    <a href="signup.html" onclick="return authGuard(event,'pages/explore.html')">See All <span>→</span></a>
                 </div>
             </div>
             <div class="pcard-row">
@@ -441,7 +441,6 @@
                 <p class="f-col-title">Quick Links</p>
                 <div class="f-links">
                     <a href="#">About Us</a>
-                    <a href="#">Contact Us</a>
                     <a href="#">Blog Posts</a>
                     <a href="#">Help Center</a>
                     <a href="#">Community Forum</a>
@@ -538,6 +537,17 @@
     </style>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/main.js"></script>
+    <script>
+      function authGuard(e, page) {
+        e.preventDefault();
+        if (localStorage.getItem('skillswap_user')) {
+          window.location.href = page;
+        } else {
+          window.location.href = 'signup.html';
+        }
+        return false;
+      }
+    </script>
 </body>
 
 </html>

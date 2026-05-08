@@ -66,6 +66,36 @@
     justify-content: flex-end;
 }
 
+.nav-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--flame);
+    color: #1a0a00;
+    font-family: var(--font-head);
+    font-size: 0.82rem;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid rgba(249, 115, 22, 0.35);
+    box-shadow: 0 0 12px rgba(249, 115, 22, 0.2);
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+    text-decoration: none;
+}
+
+.nav-avatar:hover {
+    box-shadow: 0 0 20px rgba(249, 115, 22, 0.4);
+    transform: scale(1.08);
+}
+
+.nav-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
 .logo-wrap {
     display: flex;
     align-items: center;

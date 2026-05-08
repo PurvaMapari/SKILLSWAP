@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Swap Detail — SkillSwap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      background: var(--bg);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .page-layout {
+      display: flex;
+      gap: 2rem;
+      max-width: 1000px;
+      width: 100%;
+      margin: 5rem auto 0;
+      padding: 0 2rem 2rem;
+      position: relative;
+      z-index: 1;
+      align-items: stretch;
+      flex: 1;
+      min-height: 0;
+    }
+
+    /* Animated background blobs */
+    .bg-blob {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(120px);
+      pointer-events: none;
+      z-index: 0;
+      animation: blobFloat 8s ease-in-out infinite;
+    }
+
+    .bg-blob-1 {
+      width: 500px;
+      height: 500px;
+      background: rgba(249, 115, 22, 0.08);
+      top: -150px;
+      right: -100px;
+      animation-delay: 0s;
+    }
+
+    .bg-blob-2 {
+      width: 400px;
+      height: 400px;
+      background: rgba(251, 191, 36, 0.06);
+      bottom: -100px;
+      left: -100px;
+      animation-delay: -4s;
+    }
+
+    .bg-blob-3 {
+      width: 300px;
+      height: 300px;
+      background: rgba(249, 115, 22, 0.05);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      animation-delay: -2s;
+    }
+
+    @keyframes blobFloat {
+
+      0%,
+      100% {
+        transform: translateY(0) scale(1);
+      }
+
+      50% {
+        transform: translateY(-30px) scale(1.05);
+      }
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
+
+    .logo-link {
+      position: fixed;
+      top: 1.2rem;
+      left: 1.5rem;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .back-link {
+      position: fixed;
+      top: 1.2rem;
+      right: 1.5rem;
+      z-index: 10;
+      font-family: var(--font-head);
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--ink3);
+      text-decoration: none;
+      padding: 8px 18px;
+      border: 1px solid var(--border2);
+      border-radius: var(--r-btn);
+      transition: all 0.2s;
+    }
+
+    .back-link:hover {
+      color: var(--flame-lt);
+      border-color: var(--flame);
+      box-shadow: 0 0 14px rgba(249, 115, 22, 0.2);
+    }
+
+    /* Glassmorphism card */
+    .detail-card {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      min-width: 0;
+      overflow-y: auto;
+      background: rgba(22, 22, 22, 0.6);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 28px;
+      padding: 2.5rem;
+      box-shadow:
+        0 30px 80px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset,
+        0 1px 0 rgba(255, 255, 255, 0.06) inset;
+      animation: cardIn 0.6s ease forwards;
+    }
+
+    @keyframes cardIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px) scale(0.96);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Category pill */
+    .detail-category {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--flame-lt);
+      margin-bottom: 1rem;
+    }
+
+    /* Swap title */
+    .detail-swap-title {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 1.5rem;
+    }
+
+    .detail-skill {
+      font-family: var(--font-head);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.03em;
+    }
+
+    .detail-swap-icon {
+      font-size: 1.8rem;
+      color: var(--flame);
+      animation: swapPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes swapPulse {
+
+      0%,
+      100% {
+        opacity: 1;
+        transform: scale(1);
+      }
+
+      50% {
+        opacity: 0.7;
+        transform: scale(1.15);
+      }
+    }
+
+    .detail-skill-offered {
+      color: var(--flame-lt);
+    }
+
+    /* Info rows */
+    .detail-info {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-bottom: 1.8rem;
+    }
+
+    .info-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 16px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 14px;
+      transition: all 0.2s;
+    }
+
+    .info-row:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(249, 115, 22, 0.15);
+    }
+
+    .info-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+
+    .info-icon.offer {
+      background: rgba(249, 115, 22, 0.12);
+    }
+
+    .info-icon.level {
+      background: rgba(251, 191, 36, 0.12);
+    }
+
+    .info-icon.user {
+      background: rgba(74, 222, 128, 0.12);
+    }
+
+    .info-icon.msg {
+      background: rgba(147, 130, 255, 0.12);
+    }
+
+    .info-label {
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--ink3);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .info-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--ink);
+      margin-top: 1px;
+    }
+
+    /* Level badge */
+    .level-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 3px 12px;
+      border-radius: 50px;
+      text-transform: capitalize;
+    }
+
+    .level-beginner {
+      background: rgba(74, 222, 128, 0.12);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.25);
+    }
+
+    .level-intermediate {
+      background: rgba(251, 191, 36, 0.12);
+      color: #fbbf24;
+      border: 1px solid rgba(251, 191, 36, 0.25);
+    }
+
+    .level-advanced {
+      background: rgba(249, 115, 22, 0.12);
+      color: #fb923c;
+      border: 1px solid rgba(249, 115, 22, 0.25);
+    }
+
+    /* ── USER PROFILE SIDEBAR ── */
+    .user-profile-card {
+      width: 320px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      background: rgba(22, 22, 22, 0.5);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 24px;
+      padding: 2rem 1.8rem;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.35),
+        0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+        0 1px 0 rgba(255, 255, 255, 0.06) inset;
+      animation: cardIn 0.6s ease 0.15s both;
+      text-align: center;
+    }
+
+    .user-profile-card::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      right: -60px;
+      width: 180px;
+      height: 180px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249, 115, 22, 0.1) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .upc-avatar {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: var(--flame);
+      color: #1a0a00;
+      font-family: var(--font-head);
+      font-size: 2rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 1rem;
+      border: 3px solid rgba(249, 115, 22, 0.35);
+      box-shadow: 0 0 30px rgba(249, 115, 22, 0.25);
+    }
+
+    .upc-name {
+      font-family: var(--font-head);
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--ink);
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+
+    .upc-label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--flame-lt);
+      font-weight: 600;
+      margin-bottom: 1.2rem;
+    }
+
+    .upc-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.07);
+      margin: 0 -1.8rem 1.2rem;
+    }
+
+    .upc-info-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      text-align: left;
+      margin-bottom: 1.5rem;
+    }
+
+    .upc-info-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      transition: all 0.2s;
+    }
+
+    .upc-info-row:hover {
+      background: rgba(255, 255, 255, 0.05);
+      border-color: rgba(249, 115, 22, 0.15);
+    }
+
+    .upc-info-icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .upc-info-label {
+      font-size: 0.68rem;
+      font-weight: 600;
+      color: var(--ink4);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .upc-info-value {
+      font-size: 0.85rem;
+      color: var(--ink);
+      font-weight: 500;
+      margin-top: 1px;
+      line-height: 1.5;
+      word-break: break-word;
+    }
+
+    .btn-whatsapp {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(37, 211, 102, 0.12);
+      color: #25d366;
+      border: 1px solid rgba(37, 211, 102, 0.25);
+      border-radius: 14px;
+      font-family: var(--font-head);
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.25s;
+    }
+
+    .btn-whatsapp:hover {
+      background: rgba(37, 211, 102, 0.22);
+      box-shadow: 0 0 20px rgba(37, 211, 102, 0.2);
+      transform: translateY(-2px);
+    }
+
+    .btn-whatsapp svg {
+      flex-shrink: 0;
+    }
+
+    .whatsapp-na {
+      display: block;
+      width: 100%;
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--ink4);
+      font-style: italic;
+      padding: 10px;
+    }
+
+    /* Message section */
+    .detail-message {
+      padding: 14px 18px;
+      background: rgba(255, 255, 255, 0.03);
+      border-left: 3px solid var(--flame);
+      border-radius: 0 12px 12px 0;
+      margin-bottom: 1.8rem;
+      font-size: 0.88rem;
+      color: var(--ink2);
+      line-height: 1.65;
+      font-style: italic;
+    }
+
+    /* Request button */
+    .btn-request-swap {
+      width: 100%;
+      padding: 1.1rem;
+      background: var(--flame);
+      color: #1a0a00;
+      border: none;
+      border-radius: 16px;
+      font-family: var(--font-head);
+      font-weight: 800;
+      font-size: 1.05rem;
+      cursor: pointer;
+      transition: all 0.25s;
+      box-shadow: 0 10px 30px rgba(249, 115, 22, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-request-swap::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, transparent 50%);
+      pointer-events: none;
+    }
+
+    .btn-request-swap:hover {
+      background: var(--flame-lt);
+      transform: translateY(-3px);
+      box-shadow: 0 16px 40px rgba(249, 115, 22, 0.35);
+    }
+
+    .btn-request-swap:active {
+      transform: translateY(-1px);
+    }
+
+    .btn-request-swap:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .btn-request-swap.sent {
+      background: #4ade80;
+      box-shadow: 0 10px 30px rgba(74, 222, 128, 0.2);
+    }
+
+    .btn-own {
+      background: var(--bg3);
+      color: var(--ink3);
+      box-shadow: none;
+      cursor: default;
+      pointer-events: none;
+    }
+
+    /* Alert */
+    .detail-alert {
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      margin-bottom: 1.2rem;
+      display: none;
+      text-align: center;
+    }
+
+    .detail-alert.error {
+      background: rgba(248, 113, 113, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.2);
+    }
+
+    .detail-alert.success {
+      background: rgba(74, 222, 128, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(74, 222, 128, 0.2);
+    }
+
+    /* Date */
+    .detail-date {
+      text-align: center;
+      font-size: 0.75rem;
+      color: var(--ink4);
+      margin-top: 1rem;
+    }
+
+    /* Loading */
+    .loading-state {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .loading-spinner {
+      width: 40px;
+      height: 40px;
+      border: 3px solid var(--border2);
+      border-top-color: var(--flame);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      margin: 0 auto 1rem;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      font-size: 0.88rem;
+      color: var(--ink3);
+    }
+
+    /* Divider */
+    .detail-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.06);
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 820px) {
+      .page-layout {
+        flex-direction: column;
+        margin-top: 4.5rem;
+        padding: 1.5rem;
+      }
+
+      .user-profile-card {
+        width: 100%;
+        position: static;
+        order: -1;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .detail-card {
+        padding: 1.8rem;
+        border-radius: 22px;
+      }
+
+      .detail-swap-title {
+        gap: 10px;
+      }
+
+      .detail-skill {
+        font-size: 1.4rem;
+      }
+
+      .user-profile-card {
+        padding: 1.5rem 1.2rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="bg-blob bg-blob-1"></div>
+  <div class="bg-blob bg-blob-2"></div>
+  <div class="bg-blob bg-blob-3"></div>
+
+  <a href="../index.html" class="logo-link">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#1a0a00"
+          stroke-width="2" stroke-linecap="round" />
+        <path
+          d="M5 12c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm14 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"
+          fill="#1a0a00" />
+      </svg>
+    </div>
+    <span class="logo-name">SkillSwap</span>
+  </a>
+
+  <a href="explore.html" class="back-link">← Back to Explore</a>
+
+  <div class="page-layout">
+    <div class="detail-card" id="detailCard">
+      <div class="loading-state" id="loadingState">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Loading swap details...</div>
+      </div>
+    </div>
+    <aside class="user-profile-card" id="userProfileCard" style="display:none;"></aside>
+  </div>
+
+  <script>
+    const userStr = localStorage.getItem('skillswap_user');
+    if (!userStr) window.location.href = '../login.html';
+    const currentUser = JSON.parse(userStr);
+
+    const params = new URLSearchParams(window.location.search);
+    const swapId = params.get('id');
+
+    if (!swapId) {
+      window.location.href = 'explore.html';
+    }
+
+    const card = document.getElementById('detailCard');
+
+    fetch(`../api/swap_request.php?id=${swapId}`)
+      .then(res => res.json())
+      .then(res => {
+        if (!res.success) {
+          card.innerHTML = `
+            <div style="text-align:center;padding:3rem;">
+              <div style="font-size:2.5rem;margin-bottom:10px;">😕</div>
+              <div style="font-family:var(--font-head);font-weight:700;color:var(--ink2);margin-bottom:6px;">Not Found</div>
+              <div style="font-size:0.85rem;color:var(--ink3);">This swap request doesn't exist or has been removed.</div>
+              <a href="explore.html" style="display:inline-block;margin-top:1.2rem;color:var(--flame-lt);font-weight:600;font-size:0.88rem;">← Back to Explore</a>
+            </div>
+          `;
+          return;
+        }
+
+        const data = res.data;
+        const isOwnRequest = parseInt(data.sender_id) === currentUser.id;
+        const initials = (data.sender_name || 'U').substring(0, 2).toUpperCase();
+        const date = new Date(data.created_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+
+        // Level badge
+        const level = (data.skill_level || 'beginner').toLowerCase();
+        const levelClass = level.includes('advanced') ? 'level-advanced' :
+          level.includes('intermediate') ? 'level-intermediate' : 'level-beginner';
+        const levelLabel = level.charAt(0).toUpperCase() + level.slice(1);
+        const levelDots = level.includes('advanced') ? '●●●' :
+          level.includes('intermediate') ? '●●○' : '●○○';
+
+        // WhatsApp link
+        const phone = data.sender_phone || '';
+        const whatsappNum = phone.replace(/[^0-9]/g, '');
+        const whatsappHtml = whatsappNum
+          ? `<a href="https://wa.me/${whatsappNum}" target="_blank" class="btn-whatsapp">
+               <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.625.846 5.059 2.284 7.034L.789 23.492l4.636-1.467A11.932 11.932 0 0012 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818c-2.168 0-4.183-.685-5.834-1.85l-.419-.279-2.748.869.884-2.667-.307-.443A9.77 9.77 0 012.182 12c0-5.423 4.395-9.818 9.818-9.818S21.818 6.577 21.818 12 17.423 21.818 12 21.818z"/></svg>
+               WhatsApp
+             </a>`
+          : `<span class="whatsapp-na">WhatsApp not available</span>`;
+
+        // Button — show disabled state for own requests
+        const buttonHtml = isOwnRequest
+          ? `<button class="btn-request-swap btn-own" disabled>📌 This is your request</button>`
+          : `<button class="btn-request-swap" id="requestBtn" onclick="sendSwapRequest(${data.id}, ${data.sender_id})">⇄ Request Swap</button>`;
+
+        card.innerHTML = `
+          <div class="detail-category">${data.category || 'General'}</div>
+
+          <div class="detail-swap-title">
+            <span class="detail-skill">${data.skill_wanted}</span>
+            <span class="detail-swap-icon">⇄</span>
+            <span class="detail-skill detail-skill-offered">${data.skill_offered}</span>
+          </div>
+
+          ${data.message ? `<div class="detail-message">"${data.message}"</div>` : ''}
+
+          <div class="detail-divider"></div>
+
+          <div class="detail-info">
+            <div class="info-row">
+              <div class="info-icon offer">🎯</div>
+              <div>
+                <div class="info-label">Skill Offered</div>
+                <div class="info-value">${data.skill_offered}</div>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <div class="info-icon level">📊</div>
+              <div>
+                <div class="info-label">Proficiency Level</div>
+                <div class="info-value"><span class="level-badge ${levelClass}">${levelDots} ${levelLabel}</span></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-alert" id="detailAlert"></div>
+
+          ${buttonHtml}
+
+          <div class="detail-date">Posted on ${date}</div>
+        `;
+
+        // ── Populate the separate user profile sidebar ──
+        const profileCard = document.getElementById('userProfileCard');
+        const bio = data.sender_bio || '';
+        const location = data.sender_location || '';
+
+        profileCard.style.display = 'block';
+        profileCard.innerHTML = `
+          <div class="upc-avatar">${initials}</div>
+          <div class="upc-name">${data.sender_name}</div>
+          <div class="upc-label">Swap Requester</div>
+          <div class="upc-divider"></div>
+
+          <div class="upc-info-list">
+            ${bio ? `
+            <div class="upc-info-row">
+              <span class="upc-info-icon">📝</span>
+              <div>
+                <div class="upc-info-label">Bio</div>
+                <div class="upc-info-value">${bio}</div>
+              </div>
+            </div>` : ''}
+
+            ${location ? `
+            <div class="upc-info-row">
+              <span class="upc-info-icon">📍</span>
+              <div>
+                <div class="upc-info-label">Location</div>
+                <div class="upc-info-value">${location}</div>
+              </div>
+            </div>` : ''}
+
+            ${phone ? `
+            <div class="upc-info-row">
+              <span class="upc-info-icon">📞</span>
+              <div>
+                <div class="upc-info-label">Phone</div>
+                <div class="upc-info-value">${phone}</div>
+              </div>
+            </div>` : ''}
+
+            <div class="upc-info-row">
+              <span class="upc-info-icon">✉️</span>
+              <div>
+                <div class="upc-info-label">Email</div>
+                <div class="upc-info-value">${data.sender_email || 'Not available'}</div>
+              </div>
+            </div>
+          </div>
+
+          ${whatsappHtml}
+        `;
+      })
+      .catch(err => {
+        console.error(err);
+        card.innerHTML = `
+          <div style="text-align:center;padding:3rem;">
+            <div style="font-size:2.5rem;margin-bottom:10px;">⚠️</div>
+            <div style="font-family:var(--font-head);font-weight:700;color:var(--ink2);">Connection Error</div>
+            <div style="font-size:0.85rem;color:var(--ink3);margin-top:6px;">Unable to load swap details. Please try again.</div>
+          </div>
+        `;
+      });
+
+    function sendSwapRequest(swapId, senderId) {
+      const btn = document.getElementById('requestBtn');
+      const alert = document.getElementById('detailAlert');
+
+      btn.disabled = true;
+      btn.textContent = 'Sending...';
+      alert.style.display = 'none';
+
+      // Create a new swap request directed TO the original poster
+      // The current user wants to accept the swap offer
+      fetch('../api/swap_request.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sender_id: currentUser.id,
+          receiver_id: senderId,
+          skill_offered: document.querySelector('.detail-skill-offered')?.textContent?.trim() || '',
+          skill_wanted: document.querySelector('.detail-skill:not(.detail-skill-offered)')?.textContent?.trim() || '',
+          category: document.querySelector('.detail-category')?.textContent?.trim() || '',
+          message: `Interested in your swap request! I'd like to learn ${document.querySelector('.detail-skill:not(.detail-skill-offered)')?.textContent?.trim() || 'your skill'} and can offer help in return.`
+        })
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success) {
+            btn.textContent = '✓ Request Sent!';
+            btn.classList.add('sent');
+            alert.className = 'detail-alert success';
+            alert.textContent = '🔥 Swap request sent! They will see it in their dashboard.';
+            alert.style.display = 'block';
+          } else {
+            alert.className = 'detail-alert error';
+            alert.textContent = res.message || 'Failed to send request.';
+            alert.style.display = 'block';
+            btn.disabled = false;
+            btn.textContent = '⇄ Request Swap';
+          }
+        })
+        .catch(err => {
+          alert.className = 'detail-alert error';
+          alert.textContent = 'Connection error. Please try again.';
+          alert.style.display = 'block';
+          btn.disabled = false;
+          btn.textContent = '⇄ Request Swap';
+        });
+    }
+  </script>
+</body>
+
+</html>

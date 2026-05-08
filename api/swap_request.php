@@ -18,6 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   
     $skillOffered = trim($data['skill_offered']   ?? '');
     $skillWanted  = trim($data['skill_wanted']    ?? '');
+    $category     = trim($data['category']        ?? '');
+    $skillLevel   = trim($data['skill_level']     ?? '');
     $message      = trim($data['message']         ?? '');
     $action       = trim($data['action']          ?? '');
 
@@ -50,26 +52,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
    
 
-  $stmt = $conn->prepare("
-INSERT INTO swap_requests (
-    sender_id,
-    receiver_id,
-    skill_offered,
-    skill_wanted,
-    message
-)
-VALUES (?, ?, ?, ?, ?)
-");
-
-$receiverId = ($receiverId > 0) ? $receiverId : null;
-$stmt->bind_param(
-    'iisss',
-    $senderId,
-    $receiverId,
-    $skillOffered,
-    $skillWanted,
-    $message
-);
+  if ($receiverId > 0) {
+    $stmt = $conn->prepare("
+      INSERT INTO swap_requests (sender_id, receiver_id, skill_offered, skill_wanted, category, skill_level, message)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
+    $stmt->bind_param('iisssss', $senderId, $receiverId, $skillOffered, $skillWanted, $category, $skillLevel, $message);
+  } else {
+    $stmt = $conn->prepare("
+      INSERT INTO swap_requests (sender_id, receiver_id, skill_offered, skill_wanted, category, skill_level, message)
+      VALUES (?, NULL, ?, ?, ?, ?, ?)
+    ");
+    $stmt->bind_param('isssss', $senderId, $skillOffered, $skillWanted, $category, $skillLevel, $message);
+  }
 
 if ($stmt->execute()) {
 
@@ -88,13 +83,41 @@ if ($stmt->execute()) {
     exit;
 }
 
-// ── GET — list requests for a user ──────────
+// ── GET — fetch single request or list ──────────
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 
+    // Single request by ID (for detail page)
+    if (isset($_GET['id'])) {
+        $reqId = intval($_GET['id']);
+        $stmt = $conn->prepare("
+            SELECT sr.*, u.name AS sender_name, u.email AS sender_email, u.phone AS sender_phone,
+                   u.bio AS sender_bio, u.location AS sender_location
+            FROM swap_requests sr
+            JOIN users u ON sr.sender_id = u.id
+            WHERE sr.id = ?
+        ");
+        $stmt->bind_param('i', $reqId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $row = $result->fetch_assoc();
+        $stmt->close();
+        $conn->close();
+        if ($row) {
+            echo json_encode(['success' => true, 'data' => $row]);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Request not found.']);
+        }
+        exit;
+    }
+
+    // List all requests (dashboard)
     $result = $conn->query("
-        SELECT sr.*, u.name AS sender_name
+        SELECT sr.*, 
+               u.name AS sender_name,
+               r.name AS receiver_name
         FROM swap_requests sr
         JOIN users u ON sr.sender_id = u.id
+        LEFT JOIN users r ON sr.receiver_id = r.id
         ORDER BY sr.created_at DESC
     ");
 
