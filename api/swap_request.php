@@ -5,6 +5,7 @@
 //  GET : ?user_id=X  → fetch requests for that user
 // ============================================================
 require_once 'config.php';
+require_once 'send_email.php';
 
 $conn = getConnection();
 
@@ -36,6 +37,39 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $conn->prepare("UPDATE swap_requests SET status = ? WHERE id = ?");
         $stmt->bind_param('si', $status, $requestId);
         if ($stmt->execute()) {
+            // Send email notification when a swap is accepted
+            if ($status === 'accepted') {
+                // Look up the swap request details + sender info
+                $infoStmt = $conn->prepare("
+                    SELECT sr.*, 
+                           sender.name AS sender_name, sender.email AS sender_email,
+                           accepter.name AS receiver_name
+                    FROM swap_requests sr
+                    JOIN users sender ON sr.sender_id = sender.id
+                    LEFT JOIN users accepter ON sr.receiver_id = accepter.id
+                    WHERE sr.id = ?
+                ");
+                $infoStmt->bind_param('i', $requestId);
+                $infoStmt->execute();
+                $info = $infoStmt->get_result()->fetch_assoc();
+                $infoStmt->close();
+
+                if ($info && $info['sender_email']) {
+                    $accepterName = $info['receiver_name'] ?? 'A user';
+                    $emailBody = '
+                        <p style="color:#f5f0eb;font-size:16px;">Great news! <strong style="color:#f97316;">' . htmlspecialchars($accepterName) . '</strong> has accepted your swap request.</p>
+                        <div style="background:#252525;border:1px solid #333;border-radius:12px;padding:18px;margin:20px 0;">
+                            <p style="margin:0 0 8px;color:#a8a29e;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;">Swap Details</p>
+                            <p style="margin:0;color:#f5f0eb;"><strong>Your Skill:</strong> ' . htmlspecialchars($info['skill_offered']) . '</p>
+                            <p style="margin:4px 0 0;color:#f5f0eb;"><strong>In Exchange For:</strong> ' . htmlspecialchars($info['skill_wanted']) . '</p>
+                        </div>
+                        <p style="color:#a8a29e;">You can now start messaging to coordinate your swap sessions. Head over to your dashboard to begin!</p>
+                    ';
+                    $html = buildEmailTemplate('Your Swap Request Was Accepted! 🎉', $emailBody);
+                    sendNotificationEmail($info['sender_email'], 'SkillSwap — Your swap request was accepted!', $html);
+                }
+            }
+
             echo json_encode(['success' => true, 'message' => 'Status updated successfully.']);
         } else {
             echo json_encode(['success' => false, 'message' => 'Failed to update status.']);
@@ -67,6 +101,36 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   }
 
 if ($stmt->execute()) {
+
+    // Send email notification to the receiver (if specified)
+    if ($receiverId > 0) {
+        // Look up receiver email and sender name
+        $lookupStmt = $conn->prepare("
+            SELECT r.email AS receiver_email, r.name AS receiver_name, s.name AS sender_name
+            FROM users r, users s
+            WHERE r.id = ? AND s.id = ?
+        ");
+        $lookupStmt->bind_param('ii', $receiverId, $senderId);
+        $lookupStmt->execute();
+        $lookupResult = $lookupStmt->get_result()->fetch_assoc();
+        $lookupStmt->close();
+
+        if ($lookupResult && $lookupResult['receiver_email']) {
+            $senderName = $lookupResult['sender_name'] ?? 'Someone';
+            $emailBody = '
+                <p style="color:#f5f0eb;font-size:16px;"><strong style="color:#f97316;">' . htmlspecialchars($senderName) . '</strong> has sent you a swap request!</p>
+                <div style="background:#252525;border:1px solid #333;border-radius:12px;padding:18px;margin:20px 0;">
+                    <p style="margin:0 0 8px;color:#a8a29e;font-size:13px;text-transform:uppercase;letter-spacing:0.05em;">Swap Details</p>
+                    <p style="margin:0;color:#f5f0eb;"><strong>They Offer:</strong> ' . htmlspecialchars($skillOffered) . '</p>
+                    <p style="margin:4px 0 0;color:#f5f0eb;"><strong>They Want:</strong> ' . htmlspecialchars($skillWanted) . '</p>
+                    ' . ($message ? '<p style="margin:12px 0 0;color:#a8a29e;font-style:italic;">"' . htmlspecialchars($message) . '"</p>' : '') . '
+                </div>
+                <p style="color:#a8a29e;">Head over to your dashboard to accept or decline the request.</p>
+            ';
+            $html = buildEmailTemplate('New Swap Request! 🔥', $emailBody);
+            sendNotificationEmail($lookupResult['receiver_email'], 'SkillSwap — You have a new swap request!', $html);
+        }
+    }
 
     echo json_encode([
         'success' => true,

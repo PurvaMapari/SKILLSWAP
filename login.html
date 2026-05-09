@@ -468,12 +468,16 @@
         dataType: 'json',
         data: JSON.stringify({ email, password }),
         success: function (res) {
-          // if (res.success) {
           if (res.success === true) {
             // Store user info in localStorage for session-like behaviour
             localStorage.setItem('skillswap_user', JSON.stringify(res.user));
             formSuccess.text(res.message).show();
             setTimeout(() => { window.location.href = 'pages/home.html'; }, 1000);
+          } else if (res.message && res.message.toLowerCase().includes('no account found')) {
+            // Email not registered — show message and redirect to signup
+            formError.html('This email is not registered. Redirecting to <strong>Sign Up</strong>...').show();
+            $btn.prop('disabled', true).text('Redirecting...');
+            setTimeout(() => { window.location.href = 'signup.html'; }, 2000);
           } else {
             formError.text(res.message).show();
             $btn.prop('disabled', false).text('Log In →');
