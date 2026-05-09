@@ -716,7 +716,7 @@
 
       <!-- ACTIVE SWAPS -->
       <div class="tab-panel" id="tab-active">
-        <p class="section-note">These swaps have been accepted — start messaging to coordinate your sessions.</p>
+        <p class="section-note">These swaps have been accepted — connect via WhatsApp to coordinate your sessions.</p>
         <div class="active-swaps-grid" id="activeList"></div>
       </div>
     </div>
@@ -776,9 +776,17 @@
             if (senderId !== userId && receiverId !== userId) return;
 
             const isIncoming = receiverId === userId;
-            const otherName = isIncoming ? (req.sender_name || 'Unknown') : (req.receiver_name || 'Unknown');
+            const otherName = isIncoming ? (req.sender_name || '') : (req.receiver_name || '');
             const otherId = isIncoming ? senderId : receiverId;
+
+            // Skip requests from unknown/fake users (no name or "Unknown")
+            if (!otherName || otherName === 'Unknown') return;
+
             const initials = (otherName || 'U').substring(0,2).toUpperCase();
+
+            // Get the other user's phone for WhatsApp
+            const otherPhone = isIncoming ? (req.sender_phone || '') : (req.receiver_phone || '');
+            const whatsappNum = otherPhone.replace(/[^0-9]/g, '');
             
             // Format date
             const date = new Date(req.created_at).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
@@ -802,7 +810,11 @@
               badgeHtml = `<span class="status-badge badge-accepted">✓ Accepted</span>`;
               cardClass = 'status-accepted';
               avatarColor = 'color:#4ade80';
-              actionHtml = `<a href="messages.html?user_id=${otherId}" class="btn-message">💬 Message</a>`;
+              if (whatsappNum) {
+                actionHtml = `<a href="https://wa.me/${whatsappNum}" target="_blank" class="btn-message" style="background:#25d366;box-shadow:0 0 14px rgba(37,211,102,0.25);">💬 WhatsApp</a>`;
+              } else {
+                actionHtml = `<span style="font-size:0.75rem;color:var(--ink4);font-style:italic;">WhatsApp not available</span>`;
+              }
             } else {
               badgeHtml = `<span class="status-badge badge-rejected">✕ Rejected</span>`;
               cardClass = 'status-rejected';
@@ -847,6 +859,14 @@
               activeCount++;
               const tile = document.createElement('div');
               tile.className = 'swap-tile fade-up';
+
+              let whatsappBtnHtml = '';
+              if (whatsappNum) {
+                whatsappBtnHtml = `<a href="https://wa.me/${whatsappNum}" target="_blank" class="btn-message" style="background:#25d366;box-shadow:0 0 14px rgba(37,211,102,0.25);">💬 WhatsApp</a>`;
+              } else {
+                whatsappBtnHtml = `<span style="font-size:0.72rem;color:var(--ink4);font-style:italic;">WhatsApp N/A</span>`;
+              }
+
               tile.innerHTML = `
                 <div class="swap-tile-top">
                   <div class="swap-tile-avatar" style="${avatarColor}">${initials}</div>
@@ -857,7 +877,7 @@
                 </div>
                 <div class="swap-tile-footer">
                   <div class="swap-status">Active</div>
-                  <a href="messages.html?user_id=${otherId}" class="btn-message">💬 Open Messages</a>
+                  ${whatsappBtnHtml}
                 </div>
               `;
               activeList.appendChild(tile);

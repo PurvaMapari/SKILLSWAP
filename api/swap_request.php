@@ -177,8 +177,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     // List all requests (dashboard)
     $result = $conn->query("
         SELECT sr.*, 
-               u.name AS sender_name,
-               r.name AS receiver_name
+               u.name AS sender_name, u.phone AS sender_phone,
+               r.name AS receiver_name, r.phone AS receiver_phone
         FROM swap_requests sr
         JOIN users u ON sr.sender_id = u.id
         LEFT JOIN users r ON sr.receiver_id = r.id

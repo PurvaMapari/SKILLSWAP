@@ -1,0 +1,23 @@
+# ── SkillSwap .gitignore ──
+
+# Environment variables (contains passwords and secrets)
+.env
+
+# Test scripts
+api/test_mail.php
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# PHP dependencies (can be re-downloaded)
+api/PHPMailer/
+
+# Node
+node_modules/

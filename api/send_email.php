@@ -9,6 +9,7 @@ use PHPMailer\PHPMailer\PHPMailer;
 use PHPMailer\PHPMailer\Exception;
 use PHPMailer\PHPMailer\SMTP;
 
+require_once __DIR__ . '/env_loader.php';
 require_once __DIR__ . '/PHPMailer/src/Exception.php';
 require_once __DIR__ . '/PHPMailer/src/PHPMailer.php';
 require_once __DIR__ . '/PHPMailer/src/SMTP.php';
@@ -23,20 +24,21 @@ require_once __DIR__ . '/PHPMailer/src/SMTP.php';
  */
 function sendNotificationEmail($to, $subject, $htmlBody) {
     $mail = new PHPMailer(true);
+    $smtpEmail    = getenv('SMTP_EMAIL') ?: '';
+    $smtpPassword = getenv('SMTP_PASSWORD') ?: '';
 
     try {
         // Server settings
         $mail->isSMTP();
         $mail->Host       = 'smtp.gmail.com';
         $mail->SMTPAuth   = true;
-        $mail->Username   = 'maparipurva27@gmail.com';
-        // Remove spaces from the app password for proper authentication
-        $mail->Password   = 'tzobfmufgdefpggi';
+        $mail->Username   = $smtpEmail;
+        $mail->Password   = $smtpPassword;
         $mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
         $mail->Port       = 587;
 
         // Recipients
-        $mail->setFrom('maparipurva27@gmail.com', 'SkillSwap');
+        $mail->setFrom($smtpEmail, 'SkillSwap');
         $mail->addAddress($to);
 
         // Content

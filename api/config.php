@@ -4,11 +4,12 @@
 //  Place this whole project inside htdocs/SKILLSWAP/
 //  Make sure XAMPP Apache + MySQL are running
 // ============================================================
+require_once __DIR__ . '/env_loader.php';
 
-define('DB_HOST', 'localhost');
-define('DB_USER', 'root');          // default XAMPP user
-define('DB_PASS', 'PurvaMapari18');             // default XAMPP password (empty)
-define('DB_NAME', 'skillswap_db');
+define('DB_HOST', getenv('DB_HOST') ?: 'localhost');
+define('DB_USER', getenv('DB_USER') ?: 'root');
+define('DB_PASS', getenv('DB_PASS') ?: '');
+define('DB_NAME', getenv('DB_NAME') ?: 'skillswap_db');
 
 // Create connection
 function getConnection() {

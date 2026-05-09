@@ -288,6 +288,13 @@
 
     <form id="editProfileForm" autocomplete="off">
       <div class="form-group">
+        <label for="email">Email <span style="color:#f87171;">*</span></label>
+        <input type="email" id="email" name="email" placeholder="you@example.com" required readonly style="opacity:0.6;cursor:not-allowed;">
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="form-group">
         <label for="bio">Bio</label>
         <textarea id="bio" name="bio" rows="4" placeholder="Tell others about yourself..."></textarea>
       </div>
@@ -295,15 +302,15 @@
       <div class="field-divider"></div>
 
       <div class="form-group">
-        <label for="location">Location</label>
-        <input type="text" id="location" name="location" placeholder="City, Country (e.g. Mumbai, India)">
+        <label for="location">Location <span style="color:#f87171;">*</span></label>
+        <input type="text" id="location" name="location" placeholder="City, Country (e.g. Mumbai, India)" required>
       </div>
 
       <div class="field-divider"></div>
 
       <div class="form-group">
-        <label for="phone">WhatsApp Number</label>
-        <input type="tel" id="phone" name="phone" placeholder="+91 98765 43210">
+        <label for="phone">WhatsApp Number <span style="color:#f87171;">*</span></label>
+        <input type="tel" id="phone" name="phone" placeholder="+91 98765 43210" required>
       </div>
 
       <button type="submit" class="btn-save" id="btnSave">Save Profile</button>
@@ -333,6 +340,9 @@
 
     // Pre-fill existing profile data
     function fetchProfile() {
+      // Pre-fill email from localStorage (set during signup/login)
+      document.getElementById('email').value = currentUser.email || '';
+
       fetch(`../api/profile.php?user_id=${currentUser.id}`)
         .then(res => res.json())
         .then(res => {
@@ -355,6 +365,20 @@
       const bio      = document.getElementById('bio').value.trim();
       const location = document.getElementById('location').value.trim();
       const phone    = document.getElementById('phone').value.trim();
+
+      // Validate required fields
+      if (!location) {
+        showError('Location is required.');
+        btn.disabled = false;
+        btn.textContent = 'Save Profile';
+        return;
+      }
+      if (!phone) {
+        showError('WhatsApp number is required.');
+        btn.disabled = false;
+        btn.textContent = 'Save Profile';
+        return;
+      }
 
       fetch('../api/profile.php', {
         method: 'POST',

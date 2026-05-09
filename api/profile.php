@@ -15,13 +15,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     $userId = intval($_GET['user_id']);
     $conn = getConnection();
     
-    $stmt = $conn->prepare("SELECT bio, location, phone FROM users WHERE id = ?");
+    $stmt = $conn->prepare("SELECT email, bio, location, phone FROM users WHERE id = ?");
     $stmt->bind_param('i', $userId);
     $stmt->execute();
     $result = $stmt->get_result();
     
     if ($row = $result->fetch_assoc()) {
         echo json_encode(['success' => true, 'data' => [
+            'email' => $row['email'] ? $row['email'] : '',
             'bio' => $row['bio'] ? $row['bio'] : '',
             'location' => $row['location'] ? $row['location'] : '',
             'phone' => $row['phone'] ? $row['phone'] : ''
