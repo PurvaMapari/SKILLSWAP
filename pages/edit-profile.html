@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Profile — SkillSwap</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Caveat:wght@500;600&display=swap"
+    rel="stylesheet">
+  <link rel="stylesheet" href="../css/main.css">
+  <link rel="stylesheet" href="../css/components.css">
+  <style>
+    /* ── EDIT PROFILE PAGE ── */
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      position: relative;
+    }
+
+    /* Subtle grid overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+      background-size: 44px 44px;
+      pointer-events: none;
+    }
+
+    /* Ambient glow */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 600px 500px at 20% 30%, rgba(249, 115, 22, 0.05) 0%, transparent 70%),
+        radial-gradient(ellipse 500px 400px at 80% 70%, rgba(251, 191, 36, 0.04) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* Back / logo link */
+    .logo-link {
+      position: fixed;
+      top: 1.2rem;
+      left: 1.5rem;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .back-btn {
+      position: fixed;
+      top: 1.15rem;
+      right: 1.5rem;
+      z-index: 10;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 18px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border2);
+      border-radius: 50px;
+      font-family: var(--font-head);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--ink3);
+      text-decoration: none;
+      transition: all 0.2s;
+      backdrop-filter: blur(8px);
+    }
+
+    .back-btn:hover {
+      color: var(--flame-lt);
+      border-color: rgba(249, 115, 22, 0.35);
+      background: rgba(249, 115, 22, 0.06);
+    }
+
+    /* ── GLASSMORPHISM CARD ── */
+    .edit-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 520px;
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 28px;
+      padding: 2.8rem 2.4rem 2.4rem;
+      box-shadow:
+        0 8px 48px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(249, 115, 22, 0.06),
+        inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      animation: cardIn 0.55s ease forwards;
+    }
+
+    @keyframes cardIn {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Top glow accent inside card */
+    .edit-card::before {
+      content: '';
+      position: absolute;
+      top: -1px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(249, 115, 22, 0.5), transparent);
+      border-radius: 50%;
+    }
+
+    /* ── PAGE TITLE ── */
+    .edit-title {
+      font-family: var(--font-head);
+      font-size: clamp(1.6rem, 4vw, 2.2rem);
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      text-align: center;
+      margin-bottom: 2rem;
+      background: linear-gradient(135deg, var(--ink) 0%, var(--ink2) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── ALERTS ── */
+    .alert {
+      padding: 0.85rem 1rem;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      margin-bottom: 1.2rem;
+      display: none;
+      text-align: center;
+      font-weight: 500;
+    }
+
+    .alert-error {
+      background: rgba(239, 68, 68, 0.1);
+      color: #f87171;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      color: #4ade80;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+
+    /* ── FORM GROUPS ── */
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-family: var(--font-head);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--ink2);
+      margin-bottom: 8px;
+      letter-spacing: 0.01em;
+    }
+
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 0.85rem 1.1rem;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 14px;
+      color: var(--ink);
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+      box-sizing: border-box;
+      backdrop-filter: blur(8px);
+    }
+
+    .form-group textarea {
+      resize: vertical;
+      min-height: 110px;
+      line-height: 1.6;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+      border-color: rgba(249, 115, 22, 0.5);
+      box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.08), 0 0 16px rgba(249, 115, 22, 0.1);
+      background: rgba(249, 115, 22, 0.03);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+      color: var(--ink4);
+    }
+
+    /* ── SAVE BUTTON ── */
+    .btn-save {
+      width: 100%;
+      padding: 1rem;
+      background: var(--flame);
+      color: #1a0a00;
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+      box-shadow: 0 6px 24px rgba(249, 115, 22, 0.3), 0 0 0 1px rgba(249, 115, 22, 0.2);
+      margin-top: 0.4rem;
+    }
+
+    .btn-save:hover {
+      background: var(--flame-lt);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(249, 115, 22, 0.4);
+    }
+
+    .btn-save:active {
+      transform: translateY(0);
+    }
+
+    .btn-save:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* ── DIVIDER ── */
+    .field-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+      margin: 0.2rem 0 1.4rem;
+    }
+
+    @media (max-width: 560px) {
+      .edit-card {
+        padding: 2rem 1.4rem 1.8rem;
+        border-radius: 22px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Logo -->
+  <a href="../index.html" class="logo-link">
+    <div class="logo-icon">
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6"
+          stroke="#1a0a00" stroke-width="2" stroke-linecap="round" />
+        <path
+          d="M5 12c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3zm14 0c-1.7 0-3 1.3-3 3s1.3 3 3 3 3-1.3 3-3-1.3-3-3-3z"
+          fill="#1a0a00" />
+      </svg>
+    </div>
+    <span class="logo-name">SkillSwap</span>
+  </a>
+
+  <!-- Back to profile -->
+  <a href="profile.html" class="back-btn">← Back to Profile</a>
+
+  <!-- Glassmorphism Edit Card -->
+  <div class="edit-card">
+    <h1 class="edit-title">Edit Profile</h1>
+
+    <div class="alert alert-success" id="formSuccess"></div>
+    <div class="alert alert-error" id="formError"></div>
+
+    <form id="editProfileForm" autocomplete="off">
+      <div class="form-group">
+        <label for="bio">Bio</label>
+        <textarea id="bio" name="bio" rows="4" placeholder="Tell others about yourself..."></textarea>
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="form-group">
+        <label for="location">Location</label>
+        <input type="text" id="location" name="location" placeholder="City, Country (e.g. Mumbai, India)">
+      </div>
+
+      <div class="field-divider"></div>
+
+      <div class="form-group">
+        <label for="phone">WhatsApp Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="+91 98765 43210">
+      </div>
+
+      <button type="submit" class="btn-save" id="btnSave">Save Profile</button>
+    </form>
+  </div>
+
+  <script>
+    const userStr = localStorage.getItem('skillswap_user');
+    if (!userStr) window.location.href = '../login.html';
+    const currentUser = JSON.parse(userStr);
+
+    const successAlert = document.getElementById('formSuccess');
+    const errorAlert   = document.getElementById('formError');
+
+    function showSuccess(msg) {
+      successAlert.textContent = msg;
+      successAlert.style.display = 'block';
+      errorAlert.style.display = 'none';
+      setTimeout(() => { successAlert.style.display = 'none'; }, 3500);
+    }
+    function showError(msg) {
+      errorAlert.textContent = msg;
+      errorAlert.style.display = 'block';
+      successAlert.style.display = 'none';
+      setTimeout(() => { errorAlert.style.display = 'none'; }, 3500);
+    }
+
+    // Pre-fill existing profile data
+    function fetchProfile() {
+      fetch(`../api/profile.php?user_id=${currentUser.id}`)
+        .then(res => res.json())
+        .then(res => {
+          if (res.success && res.data) {
+            document.getElementById('bio').value      = res.data.bio      || '';
+            document.getElementById('location').value = res.data.location || '';
+            document.getElementById('phone').value    = res.data.phone    || '';
+          }
+        }).catch(() => {});
+    }
+    fetchProfile();
+
+    // Save handler
+    document.getElementById('editProfileForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const btn = document.getElementById('btnSave');
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+
+      const bio      = document.getElementById('bio').value.trim();
+      const location = document.getElementById('location').value.trim();
+      const phone    = document.getElementById('phone').value.trim();
+
+      fetch('../api/profile.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_id: currentUser.id, bio, location, phone })
+      })
+        .then(res => res.json())
+        .then(res => {
+          btn.disabled = false;
+          btn.textContent = 'Save Profile';
+          if (res.success) {
+            showSuccess('✅ Profile updated successfully!');
+            setTimeout(() => { window.location.href = 'profile.html'; }, 1200);
+          } else {
+            showError(res.message || 'Failed to update profile. Try again.');
+          }
+        })
+        .catch(() => {
+          btn.disabled = false;
+          btn.textContent = 'Save Profile';
+          showError('Connection error. Please try again.');
+        });
+    });
+  </script>
+
+</body>
+
+</html>
