@@ -471,8 +471,10 @@
 
         .team-grid {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1.2rem;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.8rem;
+            max-width: 780px;
+            margin: 0 auto;
         }
 
         .team-card {
@@ -490,11 +492,11 @@
         }
 
         .team-avatar {
-            width: 72px;
-            height: 72px;
+            width: 110px;
+            height: 110px;
             border-radius: 50%;
             background: var(--bg3);
-            border: 2px solid var(--border2);
+            border: 3px solid var(--flame);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -502,7 +504,16 @@
             font-size: 1.6rem;
             font-weight: 800;
             color: var(--flame-lt);
-            margin: 0 auto 1rem;
+            margin: 0 auto 1.2rem;
+            overflow: hidden;
+            box-shadow: 0 0 24px rgba(249, 115, 22, 0.3);
+        }
+
+        .team-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
         }
 
         .team-name {
@@ -605,6 +616,7 @@
 
             .team-grid {
                 grid-template-columns: repeat(2, 1fr);
+                max-width: 100%;
             }
         }
 
@@ -695,7 +707,7 @@
             <button class="nav-toggle" id="navToggle"><span></span><span></span><span></span></button>
         </div>
     </nav>
-    <script>(function(){var u=JSON.parse(localStorage.getItem('skillswap_user')||'{}');var el=document.getElementById('navAvatar');if(!el)return;var p=localStorage.getItem('skillswap_avatar_'+(u.id||''));if(p){el.innerHTML='<img src="'+p+'" alt="P">';}else{el.textContent=(u.name||'U').charAt(0).toUpperCase();}})();</script>
+    <script>(function () { var u = JSON.parse(localStorage.getItem('skillswap_user') || '{}'); var el = document.getElementById('navAvatar'); if (!el) return; var p = localStorage.getItem('skillswap_avatar_' + (u.id || '')); if (p) { el.innerHTML = '<img src="' + p + '" alt="P">'; } else { el.textContent = (u.name || 'U').charAt(0).toUpperCase(); } })();</script>
 
     <main class="main-content">
 
@@ -825,25 +837,22 @@
                 <h2 class="section-heading">Built by learners, for learners</h2>
                 <div class="team-grid">
                     <div class="team-card fade-up">
-                        <div class="team-avatar">A</div>
-                        <div class="team-name">Aryan Mehta</div>
-                        <div class="team-role">Co-founder & CEO</div>
-                        <div class="team-bio">Learned to code at 14 by trading guitar lessons for programming help.
-                            SkillSwap is that story, scaled.</div>
+                        <div class="team-avatar">
+                            <img src="../images/saket.png.jpeg" alt="Saket Kapileshwari" style="object-position: center 20%;">
+                        </div>
+                        <div class="team-name">Saket Kapileshwari</div>
+                        <div class="team-role">Co-founder</div>
+                        <div class="team-bio">Passionate about making knowledge accessible to all. Believes that every
+                            person has a skill worth sharing and something worth learning.</div>
                     </div>
                     <div class="team-card fade-up">
-                        <div class="team-avatar" style="color:#4ade80">S</div>
-                        <div class="team-name">Sara Kim</div>
-                        <div class="team-role">Co-founder & Design</div>
-                        <div class="team-bio">UX designer who believes the best products feel invisible. Obsessed with
-                            making skill-sharing feel effortless.</div>
-                    </div>
-                    <div class="team-card fade-up">
-                        <div class="team-avatar" style="color:#60a5fa">P</div>
-                        <div class="team-name">Priya Nair</div>
-                        <div class="team-role">Head of Community</div>
-                        <div class="team-bio">Former educator turned community builder. Makes sure every swapper feels
-                            welcome from day one.</div>
+                        <div class="team-avatar">
+                            <img src="../images/purva.jpg" alt="Purva Mapari">
+                        </div>
+                        <div class="team-name">Purva Mapari</div>
+                        <div class="team-role">Co-founder</div>
+                        <div class="team-bio">Driven by the idea that learning should be a two-way street. Dedicated to
+                            building a community where everyone grows together.</div>
                     </div>
                 </div>
             </div>

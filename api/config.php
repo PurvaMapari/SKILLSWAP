@@ -7,7 +7,7 @@
 
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');          // default XAMPP user
-define('DB_PASS', 'PurvaMapari18');             // default XAMPP password (empty)
+define('DB_PASS', '');             // default XAMPP password (empty)
 define('DB_NAME', 'skillswap_db');
 
 // Create connection
