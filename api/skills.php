@@ -107,6 +107,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     } else {
         // Explore page: show public swap requests
         $skills = [];
+        $viewerId = intval($_GET['viewer_id'] ?? 0);
         
         $stmt = $conn->prepare(
             "SELECT 
@@ -124,12 +125,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
              FROM swap_requests sr
              JOIN users u ON sr.sender_id = u.id
              WHERE sr.receiver_id IS NULL AND sr.status = 'pending'
+               AND NOT EXISTS (
+                 SELECT 1 FROM swap_requests sr2 
+                 WHERE sr2.receiver_id = sr.sender_id 
+                   AND sr2.skill_offered = sr.skill_wanted 
+                   AND sr2.skill_wanted = sr.skill_offered
+                   AND sr2.status = 'accepted'
+               )
              ORDER BY sr.created_at DESC
              LIMIT 50"
         );
         $stmt->execute();
         $result = $stmt->get_result();
-        while ($row = $result->fetch_assoc()) $skills[] = $row;
+        while ($row = $result->fetch_assoc()) {
+            // Check if viewer already requested this swap
+            if ($viewerId > 0) {
+                $chk = $conn->prepare(
+                    "SELECT id FROM swap_requests WHERE sender_id = ? AND receiver_id = ? AND status = 'pending' LIMIT 1"
+                );
+                $chk->bind_param('ii', $viewerId, $row['user_id']);
+                $chk->execute();
+                $chk->store_result();
+                $row['already_requested'] = $chk->num_rows > 0 ? 1 : 0;
+                $chk->close();
+            } else {
+                $row['already_requested'] = 0;
+            }
+            $skills[] = $row;
+        }
         $stmt->close();
     }
     

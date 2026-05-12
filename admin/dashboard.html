@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard — SkillSwap</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0d0d0d; --bg2: #141414; --bg3: #1c1c1c; --bg4: #232323;
+      --border: rgba(255,255,255,0.06); --border2: rgba(255,255,255,0.10);
+      --ink: #f0ece6; --ink2: #b8b0a6; --ink3: #7a7068; --ink4: #3d3830;
+      --flame: #f97316; --flame-dk: #c2530a; --flame-lt: #fb923c;
+      --flame-glow: rgba(249,115,22,0.18);
+      --font-head: 'Syne', sans-serif; --font-body: 'Instrument Sans', sans-serif;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body); background: var(--bg); color: var(--ink);
+      display: flex; min-height: 100vh;
+    }
+    body::after {
+      content: ''; position: fixed; inset: 0; z-index: 9999; pointer-events: none; opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 240px; background: var(--bg2); border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; position: fixed;
+      top: 0; left: 0; bottom: 0; z-index: 100;
+    }
+    .sidebar-brand {
+      display: flex; align-items: center; gap: 10px;
+      padding: 1.5rem 1.4rem; border-bottom: 1px solid var(--border);
+    }
+    .sidebar-brand-icon {
+      width: 34px; height: 34px; background: var(--flame);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+    }
+    .sidebar-brand-icon svg { width: 18px; height: 18px; }
+    .sidebar-brand-name {
+      font-family: var(--font-head); font-size: 1rem; font-weight: 800;
+    }
+    .sidebar-brand-tag {
+      font-size: 0.6rem; font-weight: 700; color: var(--flame);
+      text-transform: uppercase; letter-spacing: 0.1em;
+      background: rgba(249,115,22,0.1); padding: 2px 7px; border-radius: 4px;
+      margin-left: auto;
+    }
+    .sidebar-nav { flex: 1; padding: 1rem 0.8rem; }
+    .sidebar-link {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px; border-radius: 10px;
+      font-size: 0.84rem; font-weight: 500; color: var(--ink3);
+      transition: all 0.18s; cursor: pointer; margin-bottom: 2px;
+    }
+    .sidebar-link:hover { color: var(--ink); background: var(--bg3); }
+    .sidebar-link.active {
+      color: var(--ink); background: rgba(249,115,22,0.08);
+      border: 1px solid rgba(249,115,22,0.15);
+    }
+    .sidebar-link .icon { font-size: 1.1rem; width: 24px; text-align: center; }
+    .sidebar-footer {
+      padding: 1rem 1.2rem; border-top: 1px solid var(--border);
+    }
+    .btn-logout {
+      width: 100%; padding: 10px; background: rgba(248,113,113,0.08);
+      color: #f87171; border: 1px solid rgba(248,113,113,0.2);
+      border-radius: 10px; font-family: var(--font-head);
+      font-size: 0.8rem; font-weight: 700; cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-logout:hover { background: rgba(248,113,113,0.15); }
+
+    /* ── MAIN ── */
+    .main { flex: 1; margin-left: 240px; padding: 2rem 2.5rem; }
+
+    .page-header {
+      margin-bottom: 2rem;
+    }
+    .page-title {
+      font-family: var(--font-head); font-size: 1.8rem; font-weight: 800;
+      letter-spacing: -0.04em;
+    }
+    .page-title span { color: var(--flame); }
+    .page-sub { font-size: 0.85rem; color: var(--ink3); margin-top: 4px; }
+
+    /* ── STAT CARDS ── */
+    .stats-grid {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 14px; margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.2rem 1.4rem;
+      transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .stat-card:hover {
+      border-color: rgba(249,115,22,0.2); transform: translateY(-2px);
+    }
+    .stat-card-label {
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.1em; color: var(--ink3); margin-bottom: 8px;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .stat-card-val {
+      font-family: var(--font-head); font-size: 2rem; font-weight: 800;
+      letter-spacing: -0.03em;
+    }
+    .stat-card-val.flame { color: var(--flame-lt); }
+    .stat-card-val.green { color: #4ade80; }
+    .stat-card-val.amber { color: #fbbf24; }
+    .stat-card-val.blue { color: #60a5fa; }
+    .stat-card-val.red { color: #f87171; }
+    .stat-card-val.purple { color: #a78bfa; }
+    .stat-card-sub {
+      font-size: 0.72rem; color: var(--ink4); margin-top: 4px;
+    }
+
+    /* ── PANELS ── */
+    .panel-section { display: none; }
+    .panel-section.active { display: block; }
+
+    .panel-row {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.2rem; margin-bottom: 1.5rem;
+    }
+    .panel-card {
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 16px; padding: 1.4rem;
+    }
+    .panel-card-full { grid-column: 1 / -1; }
+    .panel-card-title {
+      font-family: var(--font-head); font-size: 0.9rem; font-weight: 700;
+      margin-bottom: 1rem; display: flex; align-items: center; gap: 8px;
+    }
+
+    /* ── TABLE ── */
+    .data-table {
+      width: 100%; border-collapse: collapse;
+    }
+    .data-table th {
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.08em; color: var(--ink3); text-align: left;
+      padding: 8px 12px; border-bottom: 1px solid var(--border2);
+    }
+    .data-table td {
+      font-size: 0.82rem; color: var(--ink2); padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .data-table tr:hover td { background: var(--bg3); }
+    .data-table .badge {
+      font-size: 0.65rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.04em; padding: 3px 10px; border-radius: 50px;
+      display: inline-block;
+    }
+    .badge-pending { background: rgba(251,191,36,0.1); color: #fbbf24; }
+    .badge-accepted { background: rgba(74,222,128,0.1); color: #4ade80; }
+    .badge-declined { background: rgba(248,113,113,0.1); color: #f87171; }
+    .badge-offer { background: rgba(96,165,250,0.1); color: #60a5fa; }
+    .badge-want { background: rgba(167,139,250,0.1); color: #a78bfa; }
+    .badge-public { background: rgba(249,115,22,0.1); color: var(--flame-lt); }
+
+    /* ── CATEGORY BAR ── */
+    .cat-bar {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 1rem;
+    }
+    .cat-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; color: var(--ink2);
+      background: var(--bg3); padding: 6px 14px;
+      border-radius: 8px; border: 1px solid var(--border);
+    }
+    .cat-item strong {
+      color: var(--flame-lt); font-weight: 800;
+      font-family: var(--font-head);
+    }
+
+    /* ── ACTIVITY ── */
+    .activity-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+    .activity-dot.pending { background: #fbbf24; }
+    .activity-dot.accepted { background: #4ade80; }
+    .activity-dot.declined { background: #f87171; }
+    .activity-text {
+      flex: 1; font-size: 0.82rem; color: var(--ink2); line-height: 1.5;
+    }
+    .activity-text strong { color: var(--ink); font-weight: 600; }
+    .activity-time { font-size: 0.7rem; color: var(--ink4); white-space: nowrap; }
+
+    .search-input {
+      padding: 8px 14px; background: var(--bg3);
+      border: 1px solid var(--border2); border-radius: 8px;
+      color: var(--ink); font-family: var(--font-body);
+      font-size: 0.82rem; outline: none; width: 250px;
+      transition: border-color 0.2s; margin-bottom: 1rem;
+    }
+    .search-input:focus { border-color: var(--flame); }
+    .search-input::placeholder { color: var(--ink4); }
+
+    /* ── FILTER PILLS ── */
+    .filter-bar {
+      display: flex; align-items: center; gap: 6px;
+      margin-bottom: 1rem; flex-wrap: wrap;
+    }
+    .filter-pill {
+      font-family: var(--font-body); font-size: 0.75rem; font-weight: 600;
+      padding: 5px 14px; border-radius: 50px;
+      border: 1px solid var(--border2); background: transparent;
+      color: var(--ink3); cursor: pointer; transition: all 0.18s;
+    }
+    .filter-pill:hover { color: var(--ink); border-color: rgba(249,115,22,0.3); }
+    .filter-pill.active {
+      background: var(--flame); color: #1a0a00; font-weight: 700;
+      border-color: var(--flame);
+    }
+    .swap-section-title {
+      font-family: var(--font-head); font-size: 0.82rem; font-weight: 700;
+      color: var(--ink3); text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 0.8rem; margin-top: 1.5rem;
+    }
+    .swap-section-title:first-child { margin-top: 0; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .fade-up { animation: fadeUp 0.35s ease both; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .sidebar { width: 60px; }
+      .sidebar-brand-name, .sidebar-brand-tag, .sidebar-link span { display: none; }
+      .sidebar-link { justify-content: center; padding: 12px; }
+      .main { margin-left: 60px; padding: 1.5rem; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .panel-row { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 560px) {
+      .stats-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">
+        <svg viewBox="0 0 24 24" fill="none">
+          <path d="M12 4C9.8 4 8 5.8 8 8s1.8 4 4 4 4-1.8 4-4-1.8-4-4-4zm-7 14c0-3.3 3.1-6 7-6s7 2.7 7 6" stroke="#1a0a00" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span class="sidebar-brand-name">SkillSwap</span>
+      <span class="sidebar-brand-tag">Admin</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="sidebar-link active" data-panel="overview">
+        <span class="icon">📊</span><span>Overview</span>
+      </div>
+      <div class="sidebar-link" data-panel="users">
+        <span class="icon">👥</span><span>Users</span>
+      </div>
+      <div class="sidebar-link" data-panel="public">
+        <span class="icon">📢</span><span>Public Listings</span>
+      </div>
+      <div class="sidebar-link" data-panel="direct">
+        <span class="icon">🔄</span><span>Direct Requests</span>
+      </div>
+      <div class="sidebar-link" data-panel="skills">
+        <span class="icon">🎯</span><span>Skills</span>
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <button class="btn-logout" onclick="logout()">↩ Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="page-header">
+      <div class="page-title">Admin <span>Dashboard</span></div>
+      <div class="page-sub">Platform analytics and management</div>
+    </div>
+
+    <!-- ═══ OVERVIEW PANEL ═══ -->
+    <div class="panel-section active" id="panel-overview">
+      <!-- STAT CARDS -->
+      <div class="stats-grid" id="statsGrid">
+        <div class="stat-card fade-up" data-goto="users">
+          <div class="stat-card-label">👥 Total Users</div>
+          <div class="stat-card-val blue" id="sUsers">—</div>
+          <div class="stat-card-sub" id="sUsersNew"></div>
+        </div>
+        <div class="stat-card fade-up" data-goto="skills">
+          <div class="stat-card-label">🎯 Skills Listed</div>
+          <div class="stat-card-val purple" id="sSkills">—</div>
+          <div class="stat-card-sub">Across all users</div>
+        </div>
+        <div class="stat-card fade-up" data-goto="direct">
+          <div class="stat-card-label">🔄 Total Swaps</div>
+          <div class="stat-card-val flame" id="sSwaps">—</div>
+          <div class="stat-card-sub" id="sSwapsSub"></div>
+        </div>
+        <div class="stat-card fade-up" data-goto="direct">
+          <div class="stat-card-label">✅ Accepted</div>
+          <div class="stat-card-val green" id="sAccepted">—</div>
+          <div class="stat-card-sub" id="sAcceptedSub"></div>
+        </div>
+        <div class="stat-card fade-up" data-goto="direct">
+          <div class="stat-card-label">⏳ Pending</div>
+          <div class="stat-card-val amber" id="sPending">—</div>
+          <div class="stat-card-sub">Awaiting response</div>
+        </div>
+        <div class="stat-card fade-up" data-goto="direct">
+          <div class="stat-card-label">✕ Declined</div>
+          <div class="stat-card-val red" id="sDeclined">—</div>
+        </div>
+        <div class="stat-card fade-up" data-goto="public">
+          <div class="stat-card-label">📢 Public Listings</div>
+          <div class="stat-card-val flame" id="sPublic">—</div>
+          <div class="stat-card-sub">Open for requests</div>
+        </div>
+        <div class="stat-card fade-up" data-goto="overview">
+          <div class="stat-card-label">📈 Success Rate</div>
+          <div class="stat-card-val green" id="sRate">—</div>
+        </div>
+      </div>
+
+      <div class="panel-row">
+        <div class="panel-card">
+          <div class="panel-card-title">📂 Top Categories</div>
+          <div id="topCats"></div>
+        </div>
+        <div class="panel-card">
+          <div class="panel-card-title">🕒 Recent Activity</div>
+          <div id="recentActivity"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ USERS PANEL ═══ -->
+    <div class="panel-section" id="panel-users">
+      <input type="text" class="search-input" id="searchUsers" placeholder="Search users by name or email...">
+      <div class="panel-card panel-card-full">
+        <div class="panel-card-title">👥 All Registered Users</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="usersTable">
+            <thead>
+              <tr><th>#</th><th>Name</th><th>Email</th><th>Location</th><th>Phone</th><th>Skills</th><th>Swaps</th><th>Joined</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ PUBLIC LISTINGS PANEL ═══ -->
+    <div class="panel-section" id="panel-public">
+      <input type="text" class="search-input" id="searchPublic" placeholder="Search public listings...">
+      <div class="filter-bar" id="filterPublic">
+        <button class="filter-pill active" data-filter="all">All</button>
+        <button class="filter-pill" data-filter="pending">⏳ Pending</button>
+        <button class="filter-pill" data-filter="accepted">✅ Accepted</button>
+        <button class="filter-pill" data-filter="declined">✕ Declined</button>
+      </div>
+      <div class="panel-card panel-card-full">
+        <div class="panel-card-title">📢 Public Listings (Explore Page)</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="publicTable">
+            <thead>
+              <tr><th>#</th><th>Posted By</th><th>Offering</th><th>Wanting</th><th>Category</th><th>Status</th><th>Date</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ DIRECT REQUESTS PANEL ═══ -->
+    <div class="panel-section" id="panel-direct">
+      <input type="text" class="search-input" id="searchDirect" placeholder="Search direct requests...">
+      <div class="filter-bar" id="filterDirect">
+        <button class="filter-pill active" data-filter="all">All</button>
+        <button class="filter-pill" data-filter="pending">⏳ Pending</button>
+        <button class="filter-pill" data-filter="accepted">✅ Accepted</button>
+        <button class="filter-pill" data-filter="declined">✕ Declined</button>
+      </div>
+      <div class="panel-card panel-card-full">
+        <div class="panel-card-title">🔄 Direct Swap Requests</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="directTable">
+            <thead>
+              <tr><th>#</th><th>From</th><th>To</th><th>Offered</th><th>Wanted</th><th>Category</th><th>Status</th><th>Date</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ SKILLS PANEL ═══ -->
+    <div class="panel-section" id="panel-skills">
+      <input type="text" class="search-input" id="searchSkills" placeholder="Search skills by title or user...">
+      <div class="panel-card panel-card-full">
+        <div class="panel-card-title">🎯 All Listed Skills</div>
+        <div style="overflow-x:auto;">
+          <table class="data-table" id="skillsTable">
+            <thead>
+              <tr><th>#</th><th>Skill Title</th><th>Type</th><th>Category</th><th>Level</th><th>Owner</th><th>Added</th></tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script>
+    // ── AUTH GUARD ──
+    if (!sessionStorage.getItem('skillswap_admin')) {
+      window.location.href = 'login.html';
+    }
+
+    function logout() {
+      sessionStorage.removeItem('skillswap_admin');
+      window.location.href = 'login.html';
+    }
+
+    // ── SIDEBAR NAV ──
+    function switchPanel(panel) {
+      document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+      const target = document.querySelector(`.sidebar-link[data-panel="${panel}"]`);
+      if (target) target.classList.add('active');
+      document.querySelectorAll('.panel-section').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + panel).classList.add('active');
+    }
+
+    document.querySelectorAll('.sidebar-link').forEach(link => {
+      link.addEventListener('click', () => switchPanel(link.dataset.panel));
+    });
+
+    // ── STAT CARD CLICKS ──
+    document.querySelectorAll('.stat-card[data-goto]').forEach(card => {
+      card.addEventListener('click', () => switchPanel(card.dataset.goto));
+    });
+
+    // ── HELPER ──
+    function fmtDate(d) {
+      if (!d) return '—';
+      return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    function statusBadge(s) {
+      const cls = s === 'accepted' ? 'badge-accepted' : s === 'declined' ? 'badge-declined' : 'badge-pending';
+      return `<span class="badge ${cls}">${s}</span>`;
+    }
+    function timeAgo(d) {
+      if (!d) return '';
+      const diff = Date.now() - new Date(d).getTime();
+      const mins = Math.floor(diff / 60000);
+      if (mins < 60) return mins + 'm ago';
+      const hrs = Math.floor(mins / 60);
+      if (hrs < 24) return hrs + 'h ago';
+      const days = Math.floor(hrs / 24);
+      return days + 'd ago';
+    }
+
+    // ── FETCH STATS ──
+    fetch('../api/admin.php?action=stats')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) return;
+        const d = res.data;
+
+        document.getElementById('sUsers').textContent = d.total_users;
+        document.getElementById('sUsersNew').textContent = `+${d.new_users_7d} this week`;
+        document.getElementById('sSkills').textContent = d.total_skills;
+        document.getElementById('sSwaps').textContent = d.total_swaps;
+        document.getElementById('sSwapsSub').textContent = `${d.public_listings} public listings`;
+        document.getElementById('sAccepted').textContent = d.accepted_swaps;
+        const total = parseInt(d.accepted_swaps) + parseInt(d.declined_swaps);
+        document.getElementById('sAcceptedSub').textContent = total > 0 ? `${Math.round(parseInt(d.accepted_swaps)/total*100)}% of resolved` : '';
+        document.getElementById('sPending').textContent = d.pending_swaps;
+        document.getElementById('sDeclined').textContent = d.declined_swaps;
+        document.getElementById('sPublic').textContent = d.public_listings;
+        const rate = (parseInt(d.total_swaps) + parseInt(d.public_listings)) > 0
+          ? Math.round(parseInt(d.accepted_swaps) / (parseInt(d.total_swaps) + parseInt(d.public_listings)) * 100) + '%'
+          : '—';
+        document.getElementById('sRate').textContent = rate;
+
+        // Top categories
+        const catEl = document.getElementById('topCats');
+        if (d.top_categories.length === 0) {
+          catEl.innerHTML = '<div style="color:var(--ink4);font-size:0.82rem;">No categories yet</div>';
+        } else {
+          catEl.innerHTML = '<div class="cat-bar" style="flex-wrap:wrap;">' +
+            d.top_categories.map(c => `<div class="cat-item"><strong>${c.c}</strong> ${c.category}</div>`).join('') +
+            '</div>';
+        }
+
+        // Recent activity
+        const actEl = document.getElementById('recentActivity');
+        if (d.recent_activity.length === 0) {
+          actEl.innerHTML = '<div style="color:var(--ink4);font-size:0.82rem;">No activity yet</div>';
+        } else {
+          actEl.innerHTML = d.recent_activity.map(a => {
+            const from = a.sender_name || 'Unknown';
+            const to = a.receiver_name || 'Public';
+            const text = a.receiver_name
+              ? `<strong>${from}</strong> → <strong>${to}</strong>: ${a.skill_offered} ⇄ ${a.skill_wanted}`
+              : `<strong>${from}</strong> posted: ${a.skill_offered} ⇄ ${a.skill_wanted}`;
+            return `
+              <div class="activity-item">
+                <div class="activity-dot ${a.status}"></div>
+                <div class="activity-text">${text}</div>
+                <div class="activity-time">${timeAgo(a.created_at)}</div>
+              </div>`;
+          }).join('');
+        }
+      });
+
+    // ── FETCH USERS ──
+    fetch('../api/admin.php?action=users')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) return;
+        const tbody = document.querySelector('#usersTable tbody');
+        tbody.innerHTML = res.data.map((u, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td><strong style="color:var(--ink)">${u.name || '—'}</strong></td>
+            <td>${u.email || '—'}</td>
+            <td>${u.location || '—'}</td>
+            <td>${u.phone || '—'}</td>
+            <td>${u.skill_count}</td>
+            <td>${u.swap_count}</td>
+            <td>${fmtDate(u.created_at)}</td>
+          </tr>
+        `).join('');
+
+        // Search filter
+        document.getElementById('searchUsers').addEventListener('input', function() {
+          const q = this.value.toLowerCase();
+          document.querySelectorAll('#usersTable tbody tr').forEach(tr => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+          });
+        });
+      });
+
+    // ── FETCH SWAPS (split into public + direct) ──
+    let publicSwapsData = [], directSwapsData = [];
+    fetch('../api/admin.php?action=swaps')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) return;
+        publicSwapsData = res.data.filter(s => !s.receiver_name);
+        directSwapsData = res.data.filter(s => s.receiver_name);
+        renderPublic('all');
+        renderDirect('all');
+
+        // Filter pills for public
+        document.querySelectorAll('#filterPublic .filter-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            document.querySelectorAll('#filterPublic .filter-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            renderPublic(pill.dataset.filter);
+          });
+        });
+        // Filter pills for direct
+        document.querySelectorAll('#filterDirect .filter-pill').forEach(pill => {
+          pill.addEventListener('click', () => {
+            document.querySelectorAll('#filterDirect .filter-pill').forEach(p => p.classList.remove('active'));
+            pill.classList.add('active');
+            renderDirect(pill.dataset.filter);
+          });
+        });
+
+        // Search for public
+        document.getElementById('searchPublic').addEventListener('input', function() {
+          const q = this.value.toLowerCase();
+          document.querySelectorAll('#publicTable tbody tr').forEach(tr => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+          });
+        });
+        // Search for direct
+        document.getElementById('searchDirect').addEventListener('input', function() {
+          const q = this.value.toLowerCase();
+          document.querySelectorAll('#directTable tbody tr').forEach(tr => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+          });
+        });
+      });
+
+    function renderPublic(filter) {
+      const filtered = filter === 'all' ? publicSwapsData : publicSwapsData.filter(s => s.status === filter);
+      const pubBody = document.querySelector('#publicTable tbody');
+      pubBody.innerHTML = filtered.length === 0
+        ? '<tr><td colspan="7" style="text-align:center;color:var(--ink4);padding:1.5rem;">No public listings found</td></tr>'
+        : filtered.map((s, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td><strong style="color:var(--ink)">${s.sender_name || '—'}</strong></td>
+            <td>${s.skill_offered}</td>
+            <td>${s.skill_wanted}</td>
+            <td>${s.category || '—'}</td>
+            <td>${statusBadge(s.status)}</td>
+            <td>${fmtDate(s.created_at)}</td>
+          </tr>
+        `).join('');
+    }
+
+    function renderDirect(filter) {
+      const filtered = filter === 'all' ? directSwapsData : directSwapsData.filter(s => s.status === filter);
+      const dirBody = document.querySelector('#directTable tbody');
+      dirBody.innerHTML = filtered.length === 0
+        ? '<tr><td colspan="8" style="text-align:center;color:var(--ink4);padding:1.5rem;">No direct requests found</td></tr>'
+        : filtered.map((s, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td><strong style="color:var(--ink)">${s.sender_name || '—'}</strong></td>
+            <td>${s.receiver_name}</td>
+            <td>${s.skill_offered}</td>
+            <td>${s.skill_wanted}</td>
+            <td>${s.category || '—'}</td>
+            <td>${statusBadge(s.status)}</td>
+            <td>${fmtDate(s.created_at)}</td>
+          </tr>
+        `).join('');
+    }
+
+    // ── FETCH SKILLS ──
+    fetch('../api/admin.php?action=skills')
+      .then(r => r.json())
+      .then(res => {
+        if (!res.success) return;
+        const tbody = document.querySelector('#skillsTable tbody');
+        tbody.innerHTML = res.data.map((s, i) => `
+          <tr>
+            <td>${i + 1}</td>
+            <td><strong style="color:var(--ink)">${s.title}</strong></td>
+            <td><span class="badge ${s.type === 'offer' ? 'badge-offer' : 'badge-want'}">${s.type}</span></td>
+            <td>${s.category || '—'}</td>
+            <td>${s.level || '—'}</td>
+            <td>${s.owner_name || '—'}</td>
+            <td>${fmtDate(s.created_at)}</td>
+          </tr>
+        `).join('');
+
+        document.getElementById('searchSkills').addEventListener('input', function() {
+          const q = this.value.toLowerCase();
+          document.querySelectorAll('#skillsTable tbody tr').forEach(tr => {
+            tr.style.display = tr.textContent.toLowerCase().includes(q) ? '' : 'none';
+          });
+        });
+      });
+  </script>
+</body>
+</html>

@@ -24,6 +24,29 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $message      = trim($data['message']         ?? '');
     $action       = trim($data['action']          ?? '');
 
+    // ── DELETE REQUEST ──
+    if ($action === 'delete_request') {
+        $requestId = intval($data['request_id'] ?? 0);
+        $userId    = intval($data['user_id']    ?? 0);
+
+        if (!$requestId || !$userId) {
+            echo json_encode(['success' => false, 'message' => 'Invalid parameters.']);
+            exit;
+        }
+
+        // Only allow the sender to delete their own pending request
+        $stmt = $conn->prepare("DELETE FROM swap_requests WHERE id = ? AND sender_id = ? AND status = 'pending'");
+        $stmt->bind_param('ii', $requestId, $userId);
+        if ($stmt->execute() && $stmt->affected_rows > 0) {
+            echo json_encode(['success' => true, 'message' => 'Request deleted successfully.']);
+        } else {
+            echo json_encode(['success' => false, 'message' => 'Could not delete request.']);
+        }
+        $stmt->close();
+        $conn->close();
+        exit;
+    }
+
     // ── UPDATE STATUS ──
     if ($action === 'update_status') {
         $requestId = intval($data['request_id'] ?? 0);

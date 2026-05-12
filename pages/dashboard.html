@@ -172,11 +172,18 @@
       border-radius: 14px;
       padding: 1.1rem 1.2rem;
       transition: border-color 0.2s, transform 0.2s;
+      cursor: pointer;
     }
 
     .stat-card:hover {
       border-color: rgba(249, 115, 22, 0.25);
       transform: translateY(-2px);
+    }
+
+    .stat-card.active {
+      border-color: var(--flame);
+      background: rgba(249, 115, 22, 0.06);
+      box-shadow: 0 0 20px rgba(249, 115, 22, 0.15);
     }
 
     .stat-label {
@@ -202,6 +209,7 @@
     .stat-val.flame { color: var(--flame-lt); }
     .stat-val.green { color: #4ade80; }
     .stat-val.amber { color: #fbbf24; }
+    .stat-val.blue  { color: #60a5fa; }
 
     .main-content {
       flex: 1;
@@ -441,7 +449,7 @@
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.05em;
-      padding: 4px 12px;
+      padding: 5px 14px;
       border-radius: 50px;
     }
 
@@ -470,12 +478,14 @@
       border: 1px solid rgba(74, 222, 128, 0.25);
       border-radius: var(--r-btn);
       padding: 7px 18px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
       font-family: var(--font-head);
       white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .btn-accept:hover {
@@ -488,12 +498,14 @@
       border: 1px solid rgba(248, 113, 113, 0.25);
       border-radius: var(--r-btn);
       padding: 7px 18px;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
       font-family: var(--font-head);
       white-space: nowrap;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
 
     .btn-reject:hover {
@@ -505,8 +517,8 @@
       color: #1a0a00;
       border: none;
       border-radius: var(--r-btn);
-      padding: 8px 20px;
-      font-size: 0.8rem;
+      padding: 7px 18px;
+      font-size: 0.78rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.2s;
@@ -666,6 +678,10 @@
         grid-template-columns: repeat(2, 1fr);
       }
 
+      .stat-card .stat-label {
+        font-size: 0.62rem;
+      }
+
       .page-wrap {
         padding: 2rem 1.5rem;
       }
@@ -748,21 +764,21 @@
       <div class="page-title">My <span>Dashboard</span></div>
       <div class="page-sub">Manage your swap requests and active exchanges</div>
       <div class="stats-row">
-        <div class="stat-card">
-          <div class="stat-label">📊 Total Swaps</div>
-          <div class="stat-val flame" id="statTotal">0</div>
+        <div class="stat-card active" data-tab="incoming" onclick="switchTab('incoming', this)">
+          <div class="stat-label">📥 Incoming</div>
+          <div class="stat-val blue" id="statIncoming">0</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">⏳ Pending</div>
-          <div class="stat-val amber" id="statPending">0</div>
+        <div class="stat-card" data-tab="outgoing" onclick="switchTab('outgoing', this)">
+          <div class="stat-label">📤 Outgoing</div>
+          <div class="stat-val amber" id="statOutgoing">0</div>
         </div>
-        <div class="stat-card">
+        <div class="stat-card" data-tab="active" onclick="switchTab('active', this)">
           <div class="stat-label">🔄 Active</div>
           <div class="stat-val green" id="statActive">0</div>
         </div>
-        <div class="stat-card">
-          <div class="stat-label">✅ Success Rate</div>
-          <div class="stat-val" id="statRate">—</div>
+        <div class="stat-card" data-tab="history" onclick="switchTab('history', this)">
+          <div class="stat-label">📊 Total Swaps</div>
+          <div class="stat-val flame" id="statTotal">0</div>
         </div>
       </div>
     </div>
@@ -772,13 +788,6 @@
     <div class="page-wrap">
       <div class="alert alert-success" id="formSuccess"></div>
       <div class="alert alert-error" id="formError"></div>
-      <div class="tabs-bar">
-        <button class="tab-btn active" data-tab="incoming">Incoming <span class="tab-badge"
-            id="incomingBadge">0</span></button>
-        <button class="tab-btn" data-tab="outgoing">Outgoing <span class="tab-badge"
-            id="outgoingBadge">0</span></button>
-        <button class="tab-btn" data-tab="active">Active Swaps <span class="tab-badge" id="activeBadge">0</span></button>
-      </div>
 
       <!-- INCOMING -->
       <div class="tab-panel active" id="tab-incoming">
@@ -795,6 +804,12 @@
         <p class="section-note">These swaps have been accepted — connect via WhatsApp to coordinate your sessions.</p>
         <div class="active-swaps-grid" id="activeList"></div>
       </div>
+
+      <!-- HISTORY -->
+      <div class="tab-panel" id="tab-history">
+        <p class="section-note">Complete history of all your swap requests.</p>
+        <div class="request-list" id="historyList"></div>
+      </div>
     </div>
   </main>
 
@@ -803,14 +818,19 @@
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
   <script src="../js/main.js"></script>
   <script>
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-        btn.classList.add('active');
-        document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
-      });
-    });
+    function switchTab(tab, card) {
+      // Update active stat card (exclude the non-clickable Total card)
+      document.querySelectorAll('.stat-card[data-tab]').forEach(c => c.classList.remove('active'));
+      card.classList.add('active');
+
+      // Show/hide panels
+      document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+    }
+
+    // Initialize: show incoming panel by default
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-incoming').classList.add('active');
 
     const successAlert = document.getElementById('formSuccess');
     const errorAlert = document.getElementById('formError');
@@ -881,6 +901,10 @@
                 actionHtml = `
                   <button class="btn-accept" onclick="updateReq(${req.id}, 'accepted', '${otherName}')">✓ Accept</button>
                   <button class="btn-reject" onclick="updateReq(${req.id}, 'declined', '${otherName}')">✕ Reject</button>
+                `;
+              } else {
+                actionHtml = `
+                  <button class="btn-reject" onclick="deleteReq(${req.id}, '${otherName}')">✕ Unsend</button>
                 `;
               }
             } else if (req.status === 'accepted') {
@@ -966,22 +990,65 @@
           if (outCount === 0) outgoingList.innerHTML = '<div class="empty-state"><div class="empty-icon">📤</div><div class="empty-title">No outgoing requests</div><div class="empty-sub">Find someone to swap with on the <a href="explore.html" style="color:var(--flame-lt);text-decoration:underline">Explore</a> page.</div></div>';
           if (activeCount === 0) activeList.innerHTML = '<div class="empty-state"><div class="empty-icon">🤝</div><div class="empty-title">No active swaps yet</div><div class="empty-sub">Once a swap request is accepted, you can start messaging here.</div></div>';
 
-          // Update stat cards
-          const total = inCount + outCount;
-          document.getElementById('statTotal').textContent = total;
-          document.getElementById('statPending').textContent = res.data.filter(r => r.status === 'pending').length;
-          document.getElementById('statActive').textContent = activeCount;
-          const accepted = res.data.filter(r => r.status === 'accepted').length;
-          const declined = res.data.filter(r => r.status === 'declined').length;
-          document.getElementById('statRate').textContent = (accepted + declined) > 0 ? Math.round((accepted / (accepted + declined)) * 100) + '%' : '—';
+          // Build history list (all swaps involving this user)
+          const historyList = document.getElementById('historyList');
+          historyList.innerHTML = '';
+          let historyCount = 0;
 
-          // Update badges
-          const badgeIn = document.getElementById('incomingBadge');
-          if(badgeIn) badgeIn.textContent = inCount;
-          const badgeOut = document.getElementById('outgoingBadge');
-          if(badgeOut) badgeOut.textContent = outCount;
-          const badgeActive = document.getElementById('activeBadge');
-          if(badgeActive) badgeActive.textContent = activeCount;
+          res.data.forEach(req => {
+            const sId = parseInt(req.sender_id);
+            const rId = req.receiver_id ? parseInt(req.receiver_id) : null;
+            const uId = parseInt(currentUser.id);
+            if (sId !== uId && rId !== uId) return;
+
+            const isIn = rId === uId;
+            const oName = isIn ? (req.sender_name || '') : (req.receiver_name || '');
+            if (!oName || oName === 'Unknown') return;
+
+            historyCount++;
+            const ini = (oName || 'U').substring(0,2).toUpperCase();
+            const dt = new Date(req.created_at).toLocaleDateString('en-US', {month: 'short', day: 'numeric', year: 'numeric'});
+
+            let statusBadge = '';
+            let statusColor = '';
+            if (req.status === 'accepted') {
+              statusBadge = '<span class="status-badge badge-accepted">✓ Completed</span>';
+              statusColor = 'color:#4ade80';
+            } else if (req.status === 'declined') {
+              statusBadge = '<span class="status-badge badge-rejected">✕ Declined</span>';
+              statusColor = 'color:var(--ink3)';
+            } else {
+              statusBadge = '<span class="status-badge badge-pending">Pending</span>';
+              statusColor = 'color:var(--flame-lt)';
+            }
+
+            const direction = isIn ? '📥 Incoming' : '📤 Outgoing';
+            const desc = isIn
+              ? `<strong>${oName}</strong> offered <em>${req.skill_offered}</em> for your <em>${req.skill_wanted}</em>`
+              : `You offered <em>${req.skill_offered}</em> to <strong>${oName}</strong> for <em>${req.skill_wanted}</em>`;
+
+            const card = document.createElement('div');
+            card.className = 'request-card fade-up';
+            card.innerHTML = `
+              <div class="req-avatar" style="${statusColor}">${ini}</div>
+              <div class="req-body">
+                <div class="req-names">${desc}</div>
+                <div class="req-date">${direction} • ${dt}</div>
+              </div>
+              <div class="req-actions">
+                ${statusBadge}
+              </div>
+            `;
+            historyList.appendChild(card);
+          });
+
+          if (historyCount === 0) historyList.innerHTML = '<div class="empty-state"><div class="empty-icon">📜</div><div class="empty-title">No swap history</div><div class="empty-sub">Your completed and past swaps will appear here.</div></div>';
+
+          // Update stat card counts
+          document.getElementById('statTotal').textContent = historyCount;
+          document.getElementById('statIncoming').textContent = inCount;
+          document.getElementById('statOutgoing').textContent = outCount;
+          document.getElementById('statActive').textContent = activeCount;
         });
     }
 
@@ -1001,6 +1068,24 @@
           else showAlert('error', `✕ Request from ${name} rejected.`);
         } else {
           showAlert('error', res.message || 'Failed to update status.');
+        }
+      });
+    }
+
+    function deleteReq(id, name) {
+      if (!confirm(`Unsend your swap request to ${name}?`)) return;
+      fetch('../api/swap_request.php', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'delete_request', request_id: id, user_id: currentUser.id })
+      })
+      .then(res => res.json())
+      .then(res => {
+        if (res.success) {
+          fetchDashboard();
+          showAlert('success', `✕ Request to ${name} unsent.`);
+        } else {
+          showAlert('error', res.message || 'Failed to delete request.');
         }
       });
     }

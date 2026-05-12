@@ -678,7 +678,7 @@
 
     fetch(`../api/swap_request.php?id=${swapId}`)
       .then(res => res.json())
-      .then(res => {
+      .then(async res => {
         if (!res.success) {
           card.innerHTML = `
             <div style="text-align:center;padding:3rem;">
@@ -718,10 +718,44 @@
              </a>`
           : `<span class="whatsapp-na">WhatsApp not available</span>`;
 
-        // Button — show disabled state for own requests
-        const buttonHtml = isOwnRequest
-          ? `<button class="btn-request-swap btn-own" disabled>📌 This is your request</button>`
-          : `<button class="btn-request-swap" id="requestBtn" onclick="sendSwapRequest(${data.id}, ${data.sender_id})">⇄ Request Swap</button>`;
+        // Button — check skill match for non-own requests
+        let buttonHtml = '';
+        if (isOwnRequest) {
+          buttonHtml = `<button class="btn-request-swap btn-own" disabled>📌 This is your request</button>`;
+        } else {
+          // Check if already requested
+          const reqCheck = await fetch(`../api/swap_request.php?user_id=${currentUser.id}`);
+          const reqData = await reqCheck.json();
+          const alreadyRequested = reqData.success && reqData.data && reqData.data.some(r =>
+            parseInt(r.sender_id) === currentUser.id &&
+            parseInt(r.receiver_id) === data.sender_id &&
+            r.status === 'pending'
+          );
+
+          if (alreadyRequested) {
+            buttonHtml = `<button class="btn-request-swap btn-own" disabled style="background:rgba(251,191,36,0.1);color:#fbbf24;border:1px solid rgba(251,191,36,0.25);">✓ Already Requested</button>`;
+          } else {
+            // Fetch current user's skills to check if they can offer what's wanted
+            const skillRes = await fetch(`../api/skills.php?user_id=${currentUser.id}`);
+            const skillData = await skillRes.json();
+            const mySkills = (skillData.success && skillData.data) ? skillData.data : [];
+
+            // Check if user has the wanted skill (case-insensitive match)
+            const wantedSkill = (data.skill_wanted || '').toLowerCase().trim();
+            const hasSkill = mySkills.some(s =>
+              s.title && s.title.toLowerCase().trim() === wantedSkill && s.type === 'offer'
+            );
+
+            if (hasSkill) {
+              buttonHtml = `<button class="btn-request-swap" id="requestBtn" onclick="sendSwapRequest(${data.id}, ${data.sender_id})">⇄ Request Swap</button>`;
+            } else {
+              buttonHtml = `
+                <button class="btn-request-swap btn-own" disabled style="opacity:0.5;">🚫 You don't have "${data.skill_wanted}" in your skills</button>
+                <a href="profile.html" style="display:block;text-align:center;margin-top:10px;color:var(--flame-lt);font-size:0.82rem;font-family:var(--font-head);text-decoration:underline;">+ Add this skill to your profile</a>
+              `;
+            }
+          }
+        }
 
         card.innerHTML = `
           <div class="detail-category">${data.category || 'General'}</div>
@@ -740,7 +774,7 @@
             <div class="info-row">
               <div class="info-icon level" style="background:rgba(147,130,255,0.12)">📚</div>
               <div>
-                <div class="info-label">Skills Want to Learn</div>
+                <div class="info-label">Skill Want to Learn</div>
                 <div class="info-value">${data.skill_wanted}</div>
               </div>
             </div>
